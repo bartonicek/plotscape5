@@ -2,14 +2,14 @@ import { allEntries, lazy, minMax, seq, toInt, toString } from "../utils/funs";
 import { Cols, Lazy, Stringable } from "../utils/types";
 import { Dataframe } from "./Dataframe";
 import { ref } from "./Scalar";
+import { positionsSymbol } from "./Symbols";
 import {
   NumVariable,
   RefVariable,
   StrVariable,
   TranslatedVariable,
+  VariableLike,
 } from "./Variable";
-
-const positionSymbol = Symbol.for("positions");
 
 export type FactorLike<T extends Cols> = {
   cardinality: () => number;
@@ -19,8 +19,8 @@ export type FactorLike<T extends Cols> = {
 };
 
 export class Factor {
-  static Mono = (n: number) => new Mono(n);
-  static Iso = (n: number) => new Iso(n);
+  static mono = (n: number) => new Mono(n);
+  static iso = (n: number) => new Iso(n);
 
   static from = <T extends Stringable>(array: T[], labels?: string[]) => {
     return factorFrom(array, labels);
@@ -30,12 +30,23 @@ export class Factor {
     return factorBin(array, width, anchor);
   };
 
-  static product = (factor1: FactorLike<any>, factor2: FactorLike<any>) => {
+  static product = <T extends Cols, U extends Cols>(
+    factor1: FactorLike<T>,
+    factor2: FactorLike<U>
+  ) => {
     return factorProduct(factor1, factor2);
+  };
+
+  static computed = <T extends Cols>(
+    uniqueIndices: Set<number>,
+    indices: number[],
+    data: Dataframe<T>
+  ) => {
+    return new Computed(uniqueIndices, indices, data);
   };
 }
 
-class Mono implements FactorLike<{ positions: any }> {
+class Mono implements FactorLike<{ positions: VariableLike<object> }> {
   constructor(private n: number) {}
 
   cardinality = () => 1;
@@ -54,14 +65,17 @@ class Mono implements FactorLike<{ positions: any }> {
 
   data = () => {
     const push = lazy(1);
+    const empty = () => {};
     const ith = (indexfn: Lazy<number>) => {
       if (indexfn() === 0) return ref(new Set(seq(0, this.n)));
     };
-    return new Dataframe(1, { positions: { ith, push } });
+
+    const positions: VariableLike<object> = { ith, push, empty };
+    return new Dataframe(1, { positions });
   };
 }
 
-class Iso implements FactorLike<{ positions: any }> {
+class Iso implements FactorLike<{ positions: VariableLike<object> }> {
   constructor(private n: number) {}
 
   cardinality = () => this.n;
@@ -77,18 +91,21 @@ class Iso implements FactorLike<{ positions: any }> {
 
   data = () => {
     const push = lazy(this.n);
+    const empty = () => {};
     const ith = (indexfn: Lazy<number>) => {
       if (indexfn() < this.n) return ref(new Set([indexfn()]));
     };
-    return new Dataframe(this.n, { positions: { ith, push } });
+
+    const positions: VariableLike<object> = { ith, push, empty };
+    return new Dataframe(this.n, { positions });
   };
 }
 
-class Computed implements FactorLike<any> {
+class Computed<T extends Cols> implements FactorLike<T> {
   constructor(
     private _uniqueIndices: Set<number>,
     private _indices: number[],
-    public _data: Dataframe<any>
+    public _data: Dataframe<T>
   ) {}
 
   cardinality = () => this._uniqueIndices.size;
@@ -120,7 +137,7 @@ const factorFrom = (array: Stringable[], labels?: string[]) => {
 
   const data = new Dataframe(labels.length, {
     label: StrVariable.from(labels),
-    [positionSymbol]: RefVariable.from(Object.values(positions)),
+    [positionsSymbol]: RefVariable.from(Object.values(positions)),
   });
 
   return new Computed(uniqueIndices, indices, data);
@@ -157,7 +174,7 @@ const factorBin = (array: number[], width?: number, anchor?: number) => {
     dirtyIndices.push(index);
   }
 
-  // Need to clean indices: get rid off unused breaks
+  // Need to clean indices/get rid off unused bins
 
   const sortedDirtyIndices = Array.from(dirtyUniqueIndices).sort();
   const uniqueIndices = new Set<number>();
@@ -183,7 +200,7 @@ const factorBin = (array: number[], width?: number, anchor?: number) => {
   const cols = {
     binMin: NumVariable.from(binMin),
     binMax: NumVariable.from(binMax),
-    [positionSymbol]: RefVariable.from(Object.values(positions)),
+    [positionsSymbol]: RefVariable.from(Object.values(positions)),
   };
   const data = new Dataframe(uniqueIndices.size, cols);
 
@@ -226,6 +243,8 @@ const factorProduct = <T extends Cols, U extends Cols>(
     i++;
   }
 
+  // Need to clean indices/get rid off unused combinations of levels
+
   const sortedDirtyIndices = Array.from(dirtyUniqueIndices).sort();
   const uniqueIndices = new Set<number>();
   const indexMapCombined = {} as Record<number, number>;
@@ -250,7 +269,7 @@ const factorProduct = <T extends Cols, U extends Cols>(
   const data2 = factor2.data();
 
   const cols = {} as {
-    [key in keyof T | keyof U | typeof positionSymbol]: any;
+    [key in keyof T | keyof U | typeof positionsSymbol]: VariableLike<any>;
   };
 
   const translatefn1 = (indexfn: Lazy<number>) => () => indexMap1[indexfn()];
@@ -264,8 +283,11 @@ const factorProduct = <T extends Cols, U extends Cols>(
     cols[k] = new TranslatedVariable(v, translatefn2);
   }
 
-  cols[positionSymbol] = RefVariable.from(Object.values(positions));
-  const data = new Dataframe(uniqueIndices.size, cols);
+  cols[positionsSymbol as keyof typeof cols] = RefVariable.from(
+    Object.values(positions)
+  );
+
+  const data = new Dataframe(uniqueIndices.size, cols as T & U);
 
   return new Computed(uniqueIndices, indices, data);
 };

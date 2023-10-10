@@ -1,8 +1,24 @@
-import { Factor } from "./structs/Factor";
+import { createRoot } from "solid-js";
+import { Scene } from "./dom/scene/Scene";
+import { Dataframe } from "./structs/Dataframe";
+import "./style.css";
+import { loadData } from "./utils/funs";
+import { BarPlot } from "./wrappers/BarPlot";
 
-const f1 = Factor.bin([1, 1, 2, 1]);
-const f2 = Factor.from(["a", "b", "a", "a"]);
+const mpgJSON = await loadData("./testData/mpg.json");
 
-const f3 = Factor.product(f1, f2);
+console.log(mpgJSON);
 
-console.log(f3.data().unwrapRows());
+const dataMpg = Dataframe.parseCols(mpgJSON, {
+  class: "discrete",
+  displ: "numeric",
+  hwy: "numeric",
+  manufacturer: "discrete",
+});
+
+const app = document.querySelector("#app") as HTMLDivElement;
+
+createRoot(() => {
+  const scene = new Scene(app, dataMpg);
+  const plot1 = new BarPlot(scene, (d) => ({ var1: d.manufacturer }));
+});
