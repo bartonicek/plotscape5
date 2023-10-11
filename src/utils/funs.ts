@@ -17,9 +17,14 @@ export const toInt = (x: string) => parseInt(x, 10);
 
 export const diff = (x: number, y: number) => x - y;
 export const sum = (x: number, y: number) => x + y;
+export const alNumCompare = (a: string, b: string) => {
+  return a.localeCompare(b, "en", { numeric: true });
+};
 
 export const seq = (start: number, end: number) => {
-  return Array.from(Array(end - start + 1), (_, i) => start + i);
+  const length = Math.abs(end - start) + 1;
+  const sign = end >= start ? 1 : -1;
+  return Array.from(Array(length), (_, i) => start + sign * i);
 };
 
 export const minMax = (x: number[]) => {

@@ -4,7 +4,7 @@ import { Cols, Key, RowOf } from "../utils/types";
 import { Dataframe } from "./Dataframe";
 import { Factor, FactorLike } from "./Factor";
 import { Recipe } from "./Recipe";
-import { ScalarLike, ref } from "./Scalar";
+import { ScalarLike } from "./Scalar";
 import { SlidingRow } from "./SlidingRow";
 import { parentSymbol, stackSymbol, symbols } from "./Symbols";
 import { RefVariable, VariableLike } from "./Variable";
@@ -53,15 +53,15 @@ export class Partition<T extends Cols> {
     const parentIndices = parentFactor?.indices();
 
     const reducedRows: Record<number, Record<Key, ScalarLike<any>>> = {};
+    const parentRefs = {} as Record<number, number>;
 
-    let parentNext = parentIndices?.next();
-    const parentVariable = RefVariable.from([]);
     const slider = SlidingRow.from(data, 0);
+    let parentNext = parentIndices?.next();
 
     for (const index of indices) {
       if (!reducedRows[index]) {
         reducedRows[index] = recipe.reduceinit();
-        if (parent) parentVariable.push(ref(parentNext?.value));
+        parentRefs[index] = parentNext?.value;
       }
 
       reducedRows[index] = recipe.reducefn(reducedRows[index], slider.values());
@@ -69,14 +69,13 @@ export class Partition<T extends Cols> {
       slider.slide();
     }
 
+    const parentVariable = RefVariable.from(Object.values(parentRefs));
     const result = Dataframe.fromRows(Object.values(reducedRows));
     const factorData = factor.data();
 
-    // Copy over parent variable & factor variables
+    // Copy over parent ref. variable & factor variables
     if (parent) result.appendCol(parentSymbol, parentVariable);
-    for (const [k, v] of allEntries(factorData.cols)) {
-      result.appendCol(k, v);
-    }
+    for (const [k, v] of allEntries(factorData.cols)) result.appendCol(k, v);
 
     return result as unknown as Dataframe<Cols>;
   };

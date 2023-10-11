@@ -1,4 +1,13 @@
-import { allEntries, lazy, minMax, seq, toInt, toString } from "../utils/funs";
+import {
+  alNumCompare,
+  allEntries,
+  diff,
+  lazy,
+  minMax,
+  seq,
+  toInt,
+  toString,
+} from "../utils/funs";
 import { Cols, Lazy, Stringable } from "../utils/types";
 import { Dataframe } from "./Dataframe";
 import { ref } from "./Scalar";
@@ -122,7 +131,9 @@ class Computed<T extends Cols> implements FactorLike<T> {
 }
 
 const factorFrom = (array: Stringable[], labels?: string[]) => {
-  labels = labels ?? Array.from(new Set(array)).map(toString).sort();
+  if (!labels) {
+    labels = Array.from(new Set(array)).map(toString).sort(alNumCompare);
+  }
 
   const uniqueIndices = new Set(seq(0, labels.length));
   const indices = [] as number[];
@@ -176,7 +187,7 @@ const factorBin = (array: number[], width?: number, anchor?: number) => {
 
   // Need to clean indices/get rid off unused bins
 
-  const sortedDirtyIndices = Array.from(dirtyUniqueIndices).sort();
+  const sortedDirtyIndices = Array.from(dirtyUniqueIndices).sort(diff);
   const uniqueIndices = new Set<number>();
   const indexMap = {} as Record<number, number>;
 
@@ -245,7 +256,7 @@ const factorProduct = <T extends Cols, U extends Cols>(
 
   // Need to clean indices/get rid off unused combinations of levels
 
-  const sortedDirtyIndices = Array.from(dirtyUniqueIndices).sort();
+  const sortedDirtyIndices = Array.from(dirtyUniqueIndices).sort(diff);
   const uniqueIndices = new Set<number>();
   const indexMapCombined = {} as Record<number, number>;
   const indexMap1 = {} as Record<number, number>;

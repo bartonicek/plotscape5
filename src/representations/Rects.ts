@@ -1,7 +1,7 @@
 import graphicParameters from "../dom/graphicParameters";
 import { Context } from "../dom/plot/Context";
 import { Adapter } from "../structs/Adapter";
-import { groups } from "../structs/Marker";
+import { groups } from "../structs/MarkerDeprecated";
 import {
   groupSymbol,
   layerSymbol,

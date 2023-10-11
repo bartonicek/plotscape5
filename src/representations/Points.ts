@@ -7,7 +7,7 @@ import {
   groups,
   layerSymbol,
   transientSymbol,
-} from "../structs/Marker";
+} from "../structs/MarkerDeprecated";
 import { drawClear, drawPoint } from "../utils/drawfuns";
 import { rectOverlap } from "../utils/funs";
 import { Representation } from "./Representation";

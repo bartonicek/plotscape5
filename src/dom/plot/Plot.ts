@@ -3,6 +3,7 @@ import html from "solid-js/html";
 import { AxisLabels } from "../../decorations/AxisLabels";
 import { Decoration } from "../../decorations/Decoration";
 import { Representation } from "../../representations/Representation";
+import { TRANSIENT } from "../../structs/Marker";
 import { drawClear, drawRect } from "../../utils/drawfuns";
 import { call, diff, throttle, toInt } from "../../utils/funs";
 import graphicParameters from "../graphicParameters";
@@ -170,7 +171,7 @@ export class Plot {
       setClickX(x), setClickY(y), setMouseX(x), setMouseY(y);
     });
 
-    const { setSelectedCases } = this.scene.store;
+    const { setSelected: setSelectedCases } = this.scene.store;
 
     if (event.button === 0) {
       this.representations.forEach((rep) =>
@@ -230,7 +231,7 @@ export class Plot {
       setMouseX(x), setMouseY(y);
     });
 
-    const { setSelectedCases } = scene.store;
+    const { setSelected: setSelectedCases } = scene.store;
 
     representations.forEach((rep) =>
       setSelectedCases(rep.checkSelection([x0, y0, x1, y1]))
@@ -243,6 +244,6 @@ export class Plot {
   };
 
   onKeyUp = () => {
-    this.scene.store.setGroup(128);
+    this.scene.store.setGroup(TRANSIENT);
   };
 }

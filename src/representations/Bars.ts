@@ -2,7 +2,7 @@ import { Accessor, Setter, createSignal } from "solid-js";
 import graphicParameters from "../dom/graphicParameters";
 import { Context } from "../dom/plot/Context";
 import { Adapter } from "../structs/Adapter";
-import { groups } from "../structs/Marker";
+import { groups } from "../structs/MarkerDeprecated";
 import {
   groupSymbol,
   layerSymbol,
@@ -35,6 +35,8 @@ export default class Bars implements Representation {
     const initx0 = scaleX(data1.row(lazy(0)).x.value());
 
     const width = (initx1 - initx0) * widthPct;
+
+    console.log(data2.unwrapRows());
 
     // Clear previous paints
     for (const layer of groups) drawClear(contexts[layer]);

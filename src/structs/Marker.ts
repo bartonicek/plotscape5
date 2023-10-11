@@ -5,9 +5,9 @@ import {
   createSignal,
   untrack,
 } from "solid-js";
-import { Factor, FactorLike } from "../structs/Factor";
 import { seq } from "../utils/funs";
 import { Dataframe } from "./Dataframe";
+import { Factor, FactorLike } from "./Factor";
 import {
   groupSymbol,
   layerSymbol,
@@ -16,99 +16,79 @@ import {
 } from "./Symbols";
 import { RefVariable } from "./Variable";
 
-export const Group = {
-  Group1T: 4,
-  Group2T: 3,
-  Group3T: 2,
-  Group4T: 1,
-  Group1: 132,
-  Group2: 131,
-  Group3: 130,
-  Group4: 129,
-} as const;
+export const TRANSIENT = 0;
+export const [GROUP1, GROUP2, GROUP3, GROUP4] = [7, 6, 5, 4];
 
-export const groups = [4, 3, 2, 1, 132, 131, 130, 129] as const;
-export const transientGroups = [4, 3, 2, 1] as const;
+const addTransient = (index: number) => index & ~4;
+const stripTransient = (index: number) => index | 4;
 
-const groupIndexMap = {} as Record<number, number>;
-for (let i = 0; i < groups.length; i++) groupIndexMap[groups[i]] = i;
+const transientGroups = [0, 1, 2, 3];
+
+const group = RefVariable.from([4, 3, 2, 1, 4, 3, 2, 1]);
+const layer = RefVariable.from([4, 3, 2, 1, 4, 3, 2, 1]);
+const transient = RefVariable.from(Array.from(Array(8), (_, i) => i < 4));
 
 const uniqueIndices = new Set(seq(0, 7));
 
-const addTransient = (x: number) => x & ~128;
-const removeTransient = (x: number) => x | 128;
-
-const groupVar = RefVariable.from([1, 2, 3, 4, 1, 2, 3, 4]);
-const layerVar = RefVariable.from([4, 3, 2, 1, 4, 3, 2, 1]);
-const transientVar = RefVariable.from([
-  ...Array(4).fill(true),
-  ...Array(4).fill(false),
-]);
-
-export default class Marker {
-  indices: Accessor<number[]>;
-  setIndices: Setter<number[]>;
-  factor: Accessor<FactorLike<any>>;
-
+export class Marker {
+  data: Dataframe<any>;
   transientPositions: Set<number>;
   positionsArray: Set<number>[];
 
-  data: Dataframe<Record<symbol, RefVariable>>;
+  indices: Accessor<number[]>;
+  setIndices: Setter<number[]>;
+
+  factor: Accessor<FactorLike<any>>;
 
   constructor(
-    public n: number,
-    public cases: Accessor<Set<number>>,
-    public group: Accessor<number>
+    private n: number,
+    private groupS: Accessor<number>,
+    private selectedS: Accessor<Set<number>>
   ) {
-    const [indices, setIndices] = createSignal(
-      Array(n).fill(groupIndexMap[Group.Group1])
-    );
+    const positionsArray = Array.from(Array(8), () => new Set<number>());
+    const positions = RefVariable.from(positionsArray);
+    this.positionsArray = positionsArray;
+
+    this.data = Dataframe.from(n, {
+      [positionsSymbol]: positions,
+      [groupSymbol]: group,
+      [layerSymbol]: layer,
+      [transientSymbol]: transient,
+    });
+    this.transientPositions = new Set<number>();
+
+    const _indices = Array(n).fill(GROUP1);
+
+    const [indices, setIndices] = createSignal(_indices);
     this.indices = indices;
     this.setIndices = setIndices;
 
-    this.transientPositions = new Set();
-    this.positionsArray = Array.from(Array(8), () => new Set<number>());
-    this.positionsArray[groupIndexMap[Group.Group1]] = new Set(seq(0, n - 1));
-
-    const positionsVar = RefVariable.from(this.positionsArray);
-
-    this.data = Dataframe.from(8, {
-      [positionsSymbol]: positionsVar,
-      [groupSymbol]: groupVar,
-      [layerSymbol]: layerVar,
-      [transientSymbol]: transientVar,
-    });
-
-    this.cases = cases;
-    this.group = group;
-    this.factor = () => {
-      return Factor.computed(uniqueIndices, indices(), this.data);
-    };
+    this.factor = () => Factor.computed(uniqueIndices, indices(), this.data);
 
     createEffect(() => {
       const { positionsArray, transientPositions } = this;
-      const [cases, group] = [this.cases(), untrack(this.group)];
+      const [selected, group] = [this.selectedS(), untrack(this.groupS)];
       const indices = [...untrack(this.indices)];
 
-      if (!cases.size) return;
+      if (!selected.size) return;
 
-      for (const group of groups) {
-        for (const i of cases) positionsArray[groupIndexMap[group]].delete(i);
+      for (const positions of positionsArray) {
+        for (const i of selected) positions.delete(i);
       }
 
-      if (group === 128) {
+      if (group === TRANSIENT) {
         transientPositions.clear();
 
-        for (const i of cases) {
-          const group = addTransient(indices[i]);
-          indices[i] = groupIndexMap[group];
-          positionsArray[groupIndexMap[group]].add(i);
+        for (const i of selected) {
+          const index = addTransient(indices[i]);
+          indices[i] = index;
+          positionsArray[index].add(i);
           transientPositions.add(i);
         }
       } else {
-        for (const i of cases) {
-          indices[i] = groupIndexMap[group];
-          positionsArray[groupIndexMap[group]].add(i);
+        for (const i of selected) {
+          indices[i] = group;
+          positionsArray[group].add(i);
         }
       }
 
@@ -118,26 +98,19 @@ export default class Marker {
 
   clearAll = () => {
     const { n, positionsArray } = this;
-    for (const group of groups) positionsArray[groupIndexMap[group]].clear();
-    for (let i = 0; i < n; i++) {
-      positionsArray[groupIndexMap[Group.Group1]].add(i);
-    }
-    this.setIndices(Array(n).fill(groupIndexMap[Group.Group1]));
+    for (const positions of positionsArray) positions.clear();
+    for (let i = 0; i < n; i++) positionsArray[GROUP1].add(i);
+    this.setIndices(Array(n).fill(GROUP1));
   };
 
   clearTransient = () => {
-    const { positionsArray, transientPositions } = this;
-    const indexArray = [...untrack(this.indices)];
+    const { n, positionsArray, transientPositions } = this;
+    const indices = [...untrack(this.indices)];
 
-    for (const group of transientGroups) {
-      positionsArray[groupIndexMap[group]].clear();
-    }
+    for (const i of transientGroups) positionsArray[i].clear();
+    for (let i = 0; i < n; i++) indices[i] = stripTransient(indices[i]);
+    transientPositions.clear();
 
-    for (const i of transientPositions) {
-      indexArray[i] = groupIndexMap[removeTransient(indexArray[i])];
-      positionsArray[groupIndexMap[Group.Group1]].add(i);
-    }
-
-    this.setIndices(indexArray);
+    this.setIndices(indices);
   };
 }

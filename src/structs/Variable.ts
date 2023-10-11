@@ -85,7 +85,9 @@ export class TranslatedVariable<T> implements VariableLike<T> {
   ) {}
 
   empty = () => this.variable.empty();
-  ith = (indexfn: Lazy<number>) => this.variable.ith(this.translatefn(indexfn));
+  ith = (indexfn: Lazy<number>) => {
+    return this.variable.ith(this.translatefn(indexfn));
+  };
   push = (scalar: ScalarLike<T>) => this.variable.push(scalar);
 }
 

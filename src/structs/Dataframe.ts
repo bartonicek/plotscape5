@@ -126,7 +126,8 @@ export class Dataframe<T extends Cols> {
   };
 
   *[Symbol.iterator]() {
-    const row = SlidingRow.from(this, -1);
-    for (let i = 0; i < this.n; i++) yield row.slide().values();
+    const row = SlidingRow.from(this, 0);
+    yield row.values();
+    for (let i = 1; i < this.n; i++) yield row.slide().values();
   }
 }

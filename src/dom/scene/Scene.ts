@@ -1,5 +1,11 @@
 import { Dataframe } from "../../structs/Dataframe";
-import Marker, { Group } from "../../structs/Marker";
+import {
+  GROUP2,
+  GROUP3,
+  GROUP4,
+  Marker,
+  TRANSIENT,
+} from "../../structs/Marker";
 import { drawClear } from "../../utils/drawfuns";
 import { Cols } from "../../utils/types";
 import { Plot } from "../plot/Plot";
@@ -30,14 +36,14 @@ export class Scene<T extends Cols> {
 
     const store = makeSceneStore();
     this.store = store;
-    this.marker = new Marker(data.n, store.selectedCases, store.group);
+    this.marker = new Marker(data.n, store.group, store.selected);
 
     this.plots = [];
 
     this.keyActions = {
-      Digit1: () => this.store.setGroup(Group.Group2),
-      Digit2: () => this.store.setGroup(Group.Group3),
-      Digit3: () => this.store.setGroup(Group.Group4),
+      Digit1: () => this.store.setGroup(GROUP2),
+      Digit2: () => this.store.setGroup(GROUP3),
+      Digit3: () => this.store.setGroup(GROUP4),
     };
 
     this.app.addEventListener("mousedown", this.onMouseDown);
@@ -76,10 +82,10 @@ export class Scene<T extends Cols> {
   };
 
   onDoubleClick = () => {
-    for (const plot of this.plots) this.deactivateAll();
+    this.deactivateAll();
     this.marker.clearAll();
-    this.store.setGroup(128);
-    this.store.setSelectedCases(new Set<number>());
+    this.store.setGroup(TRANSIENT);
+    this.store.setSelected(new Set<number>());
   };
 
   onKeyDown = (event: KeyboardEvent) => {
@@ -88,6 +94,6 @@ export class Scene<T extends Cols> {
   };
 
   onKeyUp = () => {
-    this.store.setGroup(128);
+    this.store.setGroup(TRANSIENT);
   };
 }
