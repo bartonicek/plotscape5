@@ -45,12 +45,13 @@ export class Partition<T extends Cols> {
 
     // If we do not reduce, just combine data and factor data
     if (!recipe.state.reduced) {
-      const factorData = this.factor().data();
-      for (const k of allKeys(factorData.cols)) {
-        data.appendCol(k, factorData.cols[k]);
-      }
+      const cols = {} as Record<Key, VariableLike<any>>;
 
-      return data as unknown as Dataframe<Cols>;
+      const factorCols = this.factor().data().cols;
+      for (const k of allKeys(factorCols)) cols[k] = factorCols[k];
+      for (const k of allKeys(data.cols)) cols[k] = data.cols[k];
+
+      return Dataframe.from(data.n, cols);
     }
 
     const factor = this.factor();

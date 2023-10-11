@@ -1,13 +1,14 @@
 import { POJO, identity, secondArgument } from "../utils/funs";
 import { Cols, Lazy, MapFn, ReduceFn, Row } from "../utils/types";
 
-const initState = {
+const stateinit = () => ({
   reduced: false,
   mapped: false,
   stacked: false,
   relabeled: false,
-};
-type RecipeState = typeof initState;
+});
+
+type RecipeState = ReturnType<typeof stateinit>;
 
 export class Recipe<T extends Row, U extends Row, V extends Row> {
   constructor(
@@ -28,7 +29,7 @@ export class Recipe<T extends Row, U extends Row, V extends Row> {
       secondArgument,
       POJO,
       identity,
-      initState
+      stateinit()
     );
   };
 

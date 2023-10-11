@@ -27,6 +27,8 @@ type ColTypeMap = {
   [key in keyof ColConstructorMap]: InstanceType<ColConstructorMap[key]>;
 };
 
+export type ColScheme = Record<string, "numeric" | "discrete" | "reference">;
+
 export class Dataframe<T extends Cols> {
   private keys: Set<keyof T>;
 
@@ -51,10 +53,7 @@ export class Dataframe<T extends Cols> {
     return result;
   };
 
-  static parseCols = <
-    U extends Record<string, any[]>,
-    V extends Record<keyof U, keyof ColTypeMap>
-  >(
+  static parseCols = <U extends Record<string, any[]>, V extends ColScheme>(
     unparsed: U,
     spec: V
   ) => {

@@ -5,17 +5,27 @@ import "./style.css";
 import { loadData } from "./utils/funs";
 import { BarPlot } from "./wrappers/BarPlot";
 import { HistoPlot } from "./wrappers/HistoPlot";
+import { ScatterPlot } from "./wrappers/ScatterPlot";
 
 const mtcarsJSON = await loadData("./testData/mpg.json");
+const diamondsJSON = await loadData("./testData/diamonds.json");
 
-console.log(mtcarsJSON);
-
-const dataMtcars = Dataframe.parseCols(mtcarsJSON, {
+const schemeMtcars = {
   cyl: "discrete",
   manufacturer: "discrete",
   hwy: "numeric",
   displ: "numeric",
-});
+} as const;
+
+const schemeDiamonds = {
+  carat: "numeric",
+  price: "numeric",
+  color: "discrete",
+  cut: "discrete",
+} as const;
+
+const dataMtcars = Dataframe.parseCols(mtcarsJSON, schemeMtcars);
+const dataDiamonds = Dataframe.parseCols(diamondsJSON, schemeDiamonds);
 
 const app = document.querySelector("#app") as HTMLDivElement;
 
@@ -24,7 +34,7 @@ createRoot(() => {
   const plot1 = new BarPlot(scene, (d) => ({ var1: d.cyl }));
   const plot2 = new BarPlot(scene, (d) => ({ var1: d.manufacturer }));
   const plot3 = new HistoPlot(scene, (d) => ({ var1: d.hwy }));
-  //   const plot4 = new ScatterPlot(scene, (d) => ({ var1: d.disp, var2: d.mpg }));
+  const plot4 = new ScatterPlot(scene, (d) => ({ var1: d.displ, var2: d.hwy }));
 });
 
 // const x = new None();

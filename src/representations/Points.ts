@@ -14,24 +14,27 @@ import { Representation } from "./Representation";
 import { transientOptions } from "./transientOpts";
 
 export default class Points implements Representation {
-  radiusPct: Accessor<number>;
-  setRadiusPct: Setter<number>;
+  radiusMult: Accessor<number>;
+  setRadiusMult: Setter<number>;
   keyActions: Record<string, any>;
 
   constructor(private adapter: Adapter) {
-    const [widthPct, setWidthPct] = createSignal(1);
-    this.radiusPct = widthPct;
-    this.setRadiusPct = setWidthPct;
+    const [radius, setRadius] = createSignal(1);
+    this.radiusMult = radius;
+    this.setRadiusMult = setRadius;
     this.keyActions = {
-      Equal: () => this.setRadiusPct((r) => (r * 10) / 9),
-      Minus: () => this.setRadiusPct((r) => (r * 9) / 10),
+      Equal: () => this.setRadiusMult((r) => (r * 10) / 9),
+      Minus: () => this.setRadiusMult((r) => (r * 9) / 10),
+      KeyR: () => this.setRadiusMult(1),
     };
   }
 
   draw = () => {
     const { contexts, partData, scaleX, scaleY } = this.adapter;
-    const radiusPct = this.radiusPct();
+    const radiusMult = this.radiusMult();
     const { radius } = graphicParameters;
+
+    const rad = radius * radiusMult;
 
     const data1 = partData(1);
     const data2 = partData(2);
@@ -50,14 +53,16 @@ export default class Points implements Representation {
       const context = contexts[layer as Context];
       const color = graphicParameters.groupColours[group - 1];
 
-      drawPoint(context, x, y, { radius: radiusPct * radius, color });
-      if (transient) drawPoint(context, x, y, transientOptions);
+      drawPoint(context, x, y, { radius: rad, color });
+      if (transient) {
+        drawPoint(context, x, y, { ...transientOptions, radius: rad });
+      }
     }
   };
 
   checkSelection = (coords: [number, number, number, number]) => {
     const { partData, scaleX, scaleY } = this.adapter;
-    const radius = this.radiusPct();
+    const radius = this.radiusMult();
 
     const data = partData(1);
 
