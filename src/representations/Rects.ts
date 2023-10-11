@@ -1,7 +1,6 @@
 import graphicParameters from "../dom/graphicParameters";
-import { Context } from "../dom/plot/Context";
+import { Context, groupContexts } from "../dom/plot/Contexts";
 import { Adapter } from "../structs/Adapter";
-import { groups } from "../structs/MarkerDeprecated";
 import {
   groupSymbol,
   layerSymbol,
@@ -22,7 +21,7 @@ export default class Rects implements Representation {
     const data2 = partData(2) as any;
 
     // Clear previous paints
-    for (const layer of groups) drawClear(contexts[layer]);
+    for (const layer of groupContexts) drawClear(contexts[layer]);
 
     for (const row of data2) {
       const x0 = scaleX(row.x0.value());
@@ -49,7 +48,7 @@ export default class Rects implements Representation {
 
     const selX = [coords[0], coords[2]] as [number, number];
     const selY = [coords[1], coords[3]] as [number, number];
-    const selectedCases = new Set<number>();
+    const selected = new Set<number>();
 
     for (const row of data) {
       const x0 = scaleX(row.x0.value());
@@ -58,10 +57,10 @@ export default class Rects implements Representation {
       const y1 = scaleY(row.y1.value());
 
       if (rectOverlap([x0, x1], [y0, y1], selX, selY)) {
-        for (const cs of row[positionsSymbol].value()) selectedCases.add(cs);
+        for (const cs of row[positionsSymbol].value()) selected.add(cs);
       }
     }
 
-    return selectedCases;
+    return selected;
   };
 }

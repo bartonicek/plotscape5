@@ -1,13 +1,13 @@
 import { Accessor, createMemo, untrack } from "solid-js";
 import { allEntries, allKeys, lazy } from "../utils/funs";
-import { Cols, Key, RowOf } from "../utils/types";
+import { Cols, Key, Row, RowOf } from "../utils/types";
 import { Dataframe } from "./Dataframe";
 import { Factor, FactorLike } from "./Factor";
 import { Recipe } from "./Recipe";
-import { ScalarLike } from "./Scalar";
+import { None, ScalarLike, isScalar, none } from "./Scalar";
 import { SlidingRow } from "./SlidingRow";
 import { parentSymbol, stackSymbol, symbols } from "./Symbols";
-import { RefVariable, VariableLike } from "./Variable";
+import { ConstantVariable, RefVariable, VariableLike } from "./Variable";
 
 export class Partition<T extends Cols> {
   reduced: Accessor<Dataframe<Cols>>;
@@ -43,7 +43,13 @@ export class Partition<T extends Cols> {
   reduce = (): Dataframe<Cols> => {
     const { data, parent, recipe } = this;
 
+    // If we do not reduce, just combine data and factor data
     if (!recipe.state.reduced) {
+      const factorData = this.factor().data();
+      for (const k of allKeys(factorData.cols)) {
+        data.appendCol(k, factorData.cols[k]);
+      }
+
       return data as unknown as Dataframe<Cols>;
     }
 
@@ -95,14 +101,44 @@ export class Partition<T extends Cols> {
     }
 
     const parentData = parent ? untrack(parent.mapAndStack) : undefined;
-    const parentRows = parentData?.rows();
+    const parentRows = parentData?.rows() as Row[] | undefined;
 
-    const slider = SlidingRow.from(reduced as any, 0);
+    const slider = SlidingRow.from(reduced, 0);
+
+    // Try if every property of the mapped row can be created
+    // by only renaming/instantiating. If so, no need to loop.
+    if (!recipe.state.stacked) {
+      const rowNoop = {} as Record<Key, None>;
+      for (const k of allKeys(slider.values())) rowNoop[k] = none();
+      let noop = true;
+
+      try {
+        recipe.mapfn(rowNoop);
+      } catch {
+        noop = false;
+      }
+
+      if (noop) {
+        const cols = recipe.mapfn(reduced.cols);
+        for (const k of allKeys(cols)) {
+          if (isScalar(cols[k])) cols[k] = ConstantVariable.of(cols[k]);
+        }
+
+        const result = Dataframe.from(reduced.n, cols);
+        for (const s of symbols) {
+          if (s in reduced.cols) result.appendCol(s, reduced.cols[s]);
+        }
+
+        return result;
+      }
+    }
+    //
 
     const row1 = recipe.mapfn(slider.values());
-    const cols = {} as Record<Key, VariableLike<any>>;
 
+    const cols = {} as Record<Key, VariableLike<any>>;
     for (const k of allKeys(row1)) cols[k] = row1[k].toVariable();
+
     const result = Dataframe.from(1, cols).empty();
 
     for (const _ of factor.uniqueIndices()) {

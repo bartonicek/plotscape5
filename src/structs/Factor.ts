@@ -55,7 +55,7 @@ export class Factor {
   };
 }
 
-class Mono implements FactorLike<{ positions: VariableLike<object> }> {
+class Mono implements FactorLike<any> {
   constructor(private n: number) {}
 
   cardinality = () => 1;
@@ -75,16 +75,17 @@ class Mono implements FactorLike<{ positions: VariableLike<object> }> {
   data = () => {
     const push = lazy(1);
     const empty = () => {};
+    const isOfLength = (n: number) => n === this.n;
     const ith = (indexfn: Lazy<number>) => {
       if (indexfn() === 0) return ref(new Set(seq(0, this.n)));
     };
 
-    const positions: VariableLike<object> = { ith, push, empty };
-    return new Dataframe(1, { positions });
+    const positions: VariableLike<object> = { ith, push, empty, isOfLength };
+    return new Dataframe(1, { [positionsSymbol]: positions });
   };
 }
 
-class Iso implements FactorLike<{ positions: VariableLike<object> }> {
+class Iso implements FactorLike<any> {
   constructor(private n: number) {}
 
   cardinality = () => this.n;
@@ -101,12 +102,13 @@ class Iso implements FactorLike<{ positions: VariableLike<object> }> {
   data = () => {
     const push = lazy(this.n);
     const empty = () => {};
+    const isOfLength = (n: number) => n === this.n;
     const ith = (indexfn: Lazy<number>) => {
       if (indexfn() < this.n) return ref(new Set([indexfn()]));
     };
 
-    const positions: VariableLike<object> = { ith, push, empty };
-    return new Dataframe(this.n, { positions });
+    const positions: VariableLike<object> = { ith, push, empty, isOfLength };
+    return new Dataframe(this.n, { [positionsSymbol]: positions });
   };
 }
 

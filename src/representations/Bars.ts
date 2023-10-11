@@ -1,8 +1,7 @@
 import { Accessor, Setter, createSignal } from "solid-js";
 import graphicParameters from "../dom/graphicParameters";
-import { Context } from "../dom/plot/Context";
+import { Context, groupContexts } from "../dom/plot/Contexts";
 import { Adapter } from "../structs/Adapter";
-import { groups } from "../structs/MarkerDeprecated";
 import {
   groupSymbol,
   layerSymbol,
@@ -17,11 +16,17 @@ import { transientOptions } from "./transientOpts";
 export default class Bars implements Representation {
   widthPct: Accessor<number>;
   setWidthPct: Setter<number>;
+  keyActions: Record<string, any>;
 
   constructor(private adapter: Adapter) {
     const [widthPct, setWidthPct] = createSignal(graphicParameters.width);
     this.widthPct = widthPct;
     this.setWidthPct = setWidthPct;
+    this.keyActions = {
+      Equal: () => this.setWidthPct((w) => Math.min(1, (w * 10) / 9)),
+      Minus: () => this.setWidthPct((w) => (w * 9) / 10),
+      KeyR: () => this.setWidthPct(graphicParameters.width),
+    };
   }
 
   draw = () => {
@@ -37,7 +42,7 @@ export default class Bars implements Representation {
     const width = (initx1 - initx0) * widthPct;
 
     // Clear previous paints
-    for (const layer of groups) drawClear(contexts[layer]);
+    for (const layer of groupContexts) drawClear(contexts[layer]);
 
     for (const row of data2) {
       const x0 = scaleX(row.x.value()) - width / 2;
@@ -69,7 +74,7 @@ export default class Bars implements Representation {
 
     const selX = [coords[0], coords[2]] as [number, number];
     const selY = [coords[1], coords[3]] as [number, number];
-    const selectedCases = new Set<number>();
+    const selected = new Set<number>();
 
     for (const row of data) {
       const x0 = scaleX(row.x.value()) - width / 2;
@@ -78,10 +83,10 @@ export default class Bars implements Representation {
       const y1 = scaleY(row.y1.value());
 
       if (rectOverlap([x0, x1], [y0, y1], selX, selY)) {
-        for (const cs of row[positionsSymbol].value()) selectedCases.add(cs);
+        for (const cs of row[positionsSymbol].value()) selected.add(cs);
       }
     }
 
-    return selectedCases;
+    return selected;
   };
 }

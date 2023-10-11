@@ -28,10 +28,10 @@ type ColTypeMap = {
 };
 
 export class Dataframe<T extends Cols> {
-  private keys: (keyof T)[];
+  private keys: Set<keyof T>;
 
   constructor(public n: number, public cols: T) {
-    this.keys = allKeys(cols);
+    this.keys = new Set(allKeys(cols));
   }
 
   static from = <T extends Cols>(n: number, cols: T) => new Dataframe(n, cols);
@@ -104,13 +104,14 @@ export class Dataframe<T extends Cols> {
     return Dataframe.from(this.n, cols);
   };
 
-  appendCol = <K extends Key, U extends VariableLike<any>>(
-    key: K,
-    variable: U
-  ) => {
+  appendCol = <K extends Key, U extends VariableLike<any>>(key: K, col: U) => {
+    // if (!col.isOfLength(this.n)) {
+    //   throw new Error(`Column needs to be of same length as data: ${this.n}`);
+    // }
+
     const cols = this.cols as Record<Key, VariableLike<any>>;
-    cols[key] = variable;
-    this.keys.push(key);
+    cols[key] = col;
+    this.keys.add(key);
     return Dataframe.from(this.n, cols);
   };
 

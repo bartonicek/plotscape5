@@ -1,6 +1,6 @@
 import graphicParameters from "../dom/graphicParameters";
 
-const defaultRepOptions = { color: "black", stroke: "black", alpha: 1 };
+const defaultRepOptions = { color: "black", stroke: undefined, alpha: 1 };
 type DefaultRepOptions = typeof defaultRepOptions;
 
 export const drawClear = (context: CanvasRenderingContext2D) => {

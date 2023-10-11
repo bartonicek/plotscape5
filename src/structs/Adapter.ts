@@ -1,4 +1,4 @@
-import { Contexts } from "../dom/plot/Context";
+import { Contexts } from "../dom/plot/Contexts";
 import { PlotScales } from "../dom/plot/makeScales";
 import { PartitionSet } from "./PartitionSet";
 

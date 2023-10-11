@@ -5,10 +5,10 @@ import { Decoration } from "../../decorations/Decoration";
 import { Representation } from "../../representations/Representation";
 import { TRANSIENT } from "../../structs/Marker";
 import { drawClear, drawRect } from "../../utils/drawfuns";
-import { call, diff, throttle, toInt } from "../../utils/funs";
+import { allEntries, call, diff, throttle, toInt } from "../../utils/funs";
 import graphicParameters from "../graphicParameters";
 import { Scene } from "../scene/Scene";
-import { Contexts, contexts } from "./Context";
+import { Contexts, contexts } from "./Contexts";
 import { makeCanvasContext } from "./makeCanvasContext";
 import makeExpanses, { PlotExpanses } from "./makeExpanses";
 import makePlotStore, { PlotStore } from "./makePlotStore";
@@ -118,6 +118,16 @@ export class Plot {
 
   pushRepresentation = (representation: Representation) => {
     this.representations.push(representation);
+    const keyActions = representation.keyActions;
+    if (keyActions) {
+      for (const [k, v] of allEntries(keyActions)) {
+        const oldAction = this.keyActions[k];
+        this.keyActions[k] = () => {
+          oldAction?.();
+          v();
+        };
+      }
+    }
     createEffect(() => representation.draw());
   };
 
@@ -143,6 +153,7 @@ export class Plot {
     const { setWidth, setHeight } = this.store;
     setWidth(toInt(getComputedStyle(this.container)["width"]));
     setHeight(toInt(getComputedStyle(this.container)["height"]));
+    this.scene.marker.clearTransient();
     this.representations.forEach((rep) => rep.draw());
     this.decorations.forEach((dec) => dec.draw());
   };

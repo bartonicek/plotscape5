@@ -13,6 +13,11 @@ export type ScalarLike<T> = ValueLike<T> & {
 export const num = (x: number) => Num.of(Value.of(x));
 export const str = (x: string) => Str.of(Value.of(x));
 export const ref = (x: any) => Ref.of(Value.of(x));
+export const none = () => None.of();
+
+export const isScalar = (x: any) => {
+  return x instanceof Num || x instanceof Str || x instanceof Ref;
+};
 
 export class Num implements ScalarLike<number> {
   constructor(private valueLike: ValueLike<number>) {}
@@ -40,11 +45,20 @@ export class Str implements ScalarLike<string> {
   toVariable = () => StrVariable.from([this.value()]);
 }
 
-export class Ref implements ValueLike<any> {
+export class Ref implements ScalarLike<any> {
   constructor(private valueLike: ValueLike<any>) {}
 
   static of = (valueLike: ValueLike<any>) => new Ref(valueLike);
 
   value = () => this.valueLike.value();
   toVariable = () => RefVariable.from([this.value()]);
+}
+
+export class None implements ScalarLike<any> {
+  constructor() {}
+
+  static of = () => new None();
+
+  value = () => undefined;
+  toVariable = () => RefVariable.from([]);
 }
