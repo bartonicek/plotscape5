@@ -36,6 +36,10 @@ export class NumVariable implements VariableLike<number> {
     this.meta.max = Math.max(this.meta.max, value);
     return this.array.length;
   };
+
+  bin = (width: ValueLike<number>, anchor: ValueLike<number>) => {
+    return Factor.bin(this.array, width.value(), anchor.value());
+  };
 }
 
 export class StrVariable implements VariableLike<string> {

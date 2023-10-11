@@ -139,8 +139,6 @@ export default class Marker {
       positionsArray[groupIndexMap[Group.Group1]].add(i);
     }
 
-    console.log(indices);
-
     this.setIndices(indices);
   };
 }

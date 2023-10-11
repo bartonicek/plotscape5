@@ -36,8 +36,6 @@ export default class Bars implements Representation {
 
     const width = (initx1 - initx0) * widthPct;
 
-    console.log(data2.unwrapRows());
-
     // Clear previous paints
     for (const layer of groups) drawClear(contexts[layer]);
 
