@@ -12,4 +12,6 @@ export class Adapter {
   partData = (depth: number) => this.partitionSet.partData(depth);
   scaleX = (x: any) => this.scales.inner.data.x.pushforward(x);
   scaleY = (y: any) => this.scales.inner.data.y.pushforward(y);
+  breakWidthX = () => this.scales.inner.data.x.breakWidth();
+  breakWidthY = () => this.scales.inner.data.y.breakWidth();
 }

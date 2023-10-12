@@ -1,11 +1,12 @@
 import { ref } from "../structs/Scalar";
-import { ValueLike } from "../structs/ValueLike";
 import { Expanse } from "./Expanse";
+import { ValueLike } from "./Value";
 
 export type Scale = {
   pushforward: (x: any) => number;
   pullback: (x: number) => any;
   breaks: () => any[];
+  breakWidth: () => number;
 
   setDomain?: (lower: any, upper: any) => Scale;
   setNorm: (lower: any, upper: any) => Scale;
@@ -91,6 +92,11 @@ export class ScaleLinear implements Scale {
 
     return breaks;
   };
+
+  breakWidth = () => {
+    const breaks = this.breaks();
+    return this.pushforward(breaks[1]) - this.pushforward(breaks[0]);
+  };
 }
 
 export class ScaleDiscrete implements Scale {
@@ -140,6 +146,10 @@ export class ScaleDiscrete implements Scale {
   };
 
   breaks = () => this.values.value();
+  breakWidth = () => {
+    const breaks = this.breaks();
+    return this.pushforward(breaks[1]) - this.pushforward(breaks[0]);
+  };
 }
 
 export class ScalePlaceholder implements Scale {
@@ -173,4 +183,5 @@ export class ScalePlaceholder implements Scale {
   pullback = () => undefined;
 
   breaks = () => [];
+  breakWidth = () => 0;
 }

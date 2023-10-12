@@ -25,7 +25,7 @@ const stripTransient = (index: number) => index | 4;
 const transientGroups = [0, 1, 2, 3];
 
 const group = RefVariable.from([4, 3, 2, 1, 4, 3, 2, 1]);
-const layer = RefVariable.from([4, 3, 2, 1, 4, 3, 2, 1]);
+const layer = RefVariable.from([1, 2, 3, 4, 1, 2, 3, 4]);
 const transient = RefVariable.from(Array.from(Array(8), (_, i) => i < 4));
 
 const uniqueIndices = new Set(seq(0, 7));

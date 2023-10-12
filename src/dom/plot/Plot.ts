@@ -103,10 +103,12 @@ export class Plot {
         // then norm.unnormalize(0.3) should be 0
         const xRange = 1 / (xUpper - xLower);
         const yRange = 1 / (yUpper - yLower);
-        store.setNormXLower(-xLower * xRange);
-        store.setNormYLower(-yLower * yRange);
-        store.setNormXUpper(-xLower * xRange + xRange);
-        store.setNormYUpper(-yLower * yRange + yRange);
+        batch(() => {
+          store.setNormXLower(-xLower * xRange);
+          store.setNormYLower(-yLower * yRange);
+          store.setNormXUpper(-xLower * xRange + xRange);
+          store.setNormYUpper(-yLower * yRange + yRange);
+        });
 
         scene.marker.clearTransient();
         drawClear(contexts.user);

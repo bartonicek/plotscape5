@@ -27,7 +27,8 @@ type ColTypeMap = {
   [key in keyof ColConstructorMap]: InstanceType<ColConstructorMap[key]>;
 };
 
-export type ColScheme = Record<string, "numeric" | "discrete" | "reference">;
+type ColType = "numeric" | "discrete" | "reference";
+export type ColScheme<K extends string> = Record<K, ColType>;
 
 export class Dataframe<T extends Cols> {
   private keys: Set<keyof T>;
@@ -53,14 +54,20 @@ export class Dataframe<T extends Cols> {
     return result;
   };
 
-  static parseCols = <U extends Record<string, any[]>, V extends ColScheme>(
+  static parseCols = <
+    U extends Record<string, any[]>,
+    V extends ColScheme<string>
+  >(
     unparsed: U,
     spec: V
   ) => {
     const cols = {} as { [key in keyof V]: ColTypeMap[V[key]] };
 
     for (const [k, v] of allEntries(spec)) {
-      cols[k] = new colConstructorMap[v](unparsed[k as keyof U]) as any;
+      cols[k] = new colConstructorMap[v](
+        unparsed[k as keyof U],
+        k as string
+      ) as any;
     }
 
     return Dataframe.from(Object.values(unparsed)[0].length, cols);

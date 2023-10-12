@@ -36,6 +36,17 @@ export const minMax = (x: number[]) => {
   return [min, max];
 };
 
+export const orderBy = <T>(array: T[], orderArray: number[]) => {
+  const result = [...array];
+  result.sort((a, b) => {
+    return Math.sign(
+      orderArray[result.indexOf(a)] - orderArray[result.indexOf(b)]
+    );
+  });
+
+  return result;
+};
+
 export const allKeys = <T extends Record<Key, any>>(x: T) => {
   return Reflect.ownKeys(x) as (keyof T)[];
 };

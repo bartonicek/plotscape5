@@ -30,7 +30,7 @@ export default class Bars implements Representation {
   }
 
   draw = () => {
-    const { contexts, partData, scaleX, scaleY } = this.adapter;
+    const { contexts, partData, scaleX, scaleY, breakWidthX } = this.adapter;
     const widthPct = this.widthPct();
 
     const data1 = partData(1);
@@ -39,7 +39,7 @@ export default class Bars implements Representation {
     const initx1 = scaleX(data1.row(lazy(1)).x.value());
     const initx0 = scaleX(data1.row(lazy(0)).x.value());
 
-    const width = (initx1 - initx0) * widthPct;
+    const width = breakWidthX() * widthPct;
 
     // Clear previous paints
     for (const layer of groupContexts) drawClear(contexts[layer]);
@@ -63,14 +63,11 @@ export default class Bars implements Representation {
   };
 
   checkSelection = (coords: [number, number, number, number]) => {
-    const { partData, scaleX, scaleY } = this.adapter;
+    const { partData, scaleX, scaleY, breakWidthX } = this.adapter;
     const widthPct = this.widthPct();
 
     const data = partData(1);
-
-    const initx1 = scaleX(data.row(lazy(1)).x.value());
-    const initx0 = scaleX(data.row(lazy(0)).x.value());
-    const width = (initx1 - initx0) * widthPct;
+    const width = breakWidthX() * widthPct;
 
     const selX = [coords[0], coords[2]] as [number, number];
     const selY = [coords[1], coords[3]] as [number, number];

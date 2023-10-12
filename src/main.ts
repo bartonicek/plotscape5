@@ -35,13 +35,12 @@ createRoot(() => {
   const plot2 = new BarPlot(scene, (d) => ({ var1: d.manufacturer }));
   const plot3 = new HistoPlot(scene, (d) => ({ var1: d.hwy }));
   const plot4 = new ScatterPlot(scene, (d) => ({ var1: d.displ, var2: d.hwy }));
+
+  //   const scene2 = new Scene(app, dataDiamonds);
+  //   const plot1 = new ScatterPlot(scene2, (d) => ({
+  //     var1: d.carat,
+  //     var2: d.price,
+  //   }));
+  //   const plot2 = new BarPlot(scene2, (d) => ({ var1: d.cut }));
+  //   const plot3 = new BarPlot(scene2, (d) => ({ var1: d.color }));
 });
-
-// const x = new None();
-// const y = num(0);
-
-// try {
-//   x.add(y);
-// } catch {
-//   console.log("Can't do that Dave!");
-// }
