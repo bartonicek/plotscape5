@@ -1,6 +1,6 @@
 # Plotscape
 
-Plotscape is a TypeScript library designed for making linked interactive plots. Please note that it is still at an experimental change: functionality is limited and may be subject to change.
+Plotscape is a TypeScript library designed for making linked interactive plots. Please note that it is still at an experimental stage: functionality is limited and may be subject to change.
 
 Plotscape relies on Solid JS for reactivity and Vite for build process but uses no other packages.
 
@@ -22,9 +22,9 @@ import {
   ScatterPlot,
   Scene,
   loadData,
-} from "./lib/main";
+} from "@abartonicek/plotscape5";
 
-const mpgJSON = await loadData("./testData/mpg.json");
+const mpgJSON = await loadData("./mpg.json");
 const schemeMpg = {
   cyl: "discrete",
   manufacturer: "discrete",
