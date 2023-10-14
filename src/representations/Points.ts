@@ -40,6 +40,8 @@ export default class Points implements Representation {
     // Clear previous paints
     for (const layer of groupContexts) drawClear(contexts[layer]);
 
+    const { height } = contexts["base"].canvas.getBoundingClientRect();
+
     for (const row of data) {
       const x = scaleX(row.x.value());
       const y = scaleY(row.y.value());
@@ -51,9 +53,9 @@ export default class Points implements Representation {
       const context = contexts[layer as Context];
       const color = graphicParameters.groupColours[group - 1];
 
-      drawPoint(context, x, y, { radius: rad, color });
+      drawPoint(context, x, height - y, { radius: rad, color });
       if (transient) {
-        drawPoint(context, x, y, { ...transientOptions, radius: rad });
+        drawPoint(context, x, height - y, { ...transientOptions, radius: rad });
       }
     }
   };
@@ -68,6 +70,8 @@ export default class Points implements Representation {
     const selY = [coords[1], coords[3]] as [number, number];
     const selected = new Set<number>();
 
+    let i = 0;
+
     for (const row of data) {
       const x = scaleX(row.x.value());
       const y = scaleY(row.y.value());
@@ -78,6 +82,8 @@ export default class Points implements Representation {
       if (rectOverlap(x0x1, y0y1, selX, selY)) {
         for (const i of row[positionsSymbol].value()) selected.add(i);
       }
+
+      i++;
     }
 
     return selected;

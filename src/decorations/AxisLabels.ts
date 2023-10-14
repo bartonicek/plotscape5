@@ -4,7 +4,7 @@ import { Plot } from "../dom/plot/Plot";
 import { makeCanvasContext } from "../dom/plot/makeCanvasContext";
 import { PlotStore } from "../dom/plot/makePlotStore";
 import { Scale } from "../structs/Scale";
-import { drawClear, drawText } from "../utils/drawfuns";
+import drawText, { drawClear } from "../utils/drawfuns";
 
 const axisAlign = {
   x: {

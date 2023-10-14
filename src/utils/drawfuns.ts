@@ -3,22 +3,22 @@ import graphicParameters from "../dom/graphicParameters";
 const defaultRepOptions = { color: "black", stroke: undefined, alpha: 1 };
 type DefaultRepOptions = typeof defaultRepOptions;
 
-export const drawClear = (context: CanvasRenderingContext2D) => {
+export function drawClear(context: CanvasRenderingContext2D) {
   const { width, height } = context.canvas.getBoundingClientRect();
   context.clearRect(0, 0, width, height);
-};
+}
 
 type RectangleOptions = DefaultRepOptions;
 const defaultRectangleOptions = defaultRepOptions;
 
-export const drawRect = (
+export function drawRect(
   context: CanvasRenderingContext2D,
   x0: number,
   y0: number,
   x1: number,
   y1: number,
   options?: Partial<RectangleOptions>
-) => {
+) {
   const [w, h] = [x1 - x0, y1 - y0];
   const { height } = context.canvas.getBoundingClientRect();
   const opts = Object.assign({}, defaultRectangleOptions, options);
@@ -32,7 +32,7 @@ export const drawRect = (
     context.strokeRect(x0, height - y0, w, -h);
   }
   context.restore();
-};
+}
 
 type PointOptions = DefaultRepOptions & { radius: number };
 const defaultPointOptions = {
@@ -40,13 +40,13 @@ const defaultPointOptions = {
   radius: graphicParameters.radius,
 };
 
-export const drawPoint = (
+export function drawPoint(
   context: CanvasRenderingContext2D,
   x: number,
   y: number,
   options?: Partial<PointOptions>
-) => {
-  const { height } = context.canvas.getBoundingClientRect();
+) {
+  // const { height } = context.canvas.getBoundingClientRect();
   const opts = Object.assign({}, defaultPointOptions, options);
 
   context.save();
@@ -54,7 +54,7 @@ export const drawPoint = (
   context.globalAlpha = opts.alpha;
 
   context.beginPath();
-  context.arc(x, height - y, opts.radius, 0, 2 * Math.PI, false);
+  context.arc(x, y, opts.radius, 0, 2 * Math.PI, false);
   context.fill();
   if (opts.stroke) {
     context.strokeStyle = opts.stroke;
@@ -62,11 +62,11 @@ export const drawPoint = (
   }
 
   context.restore();
-};
+}
 
 type TextOptions = { fontsize: number; fontfamily: string; vertical: boolean };
 
-export function drawText(
+export default function drawText(
   context: CanvasRenderingContext2D,
   label: string,
   x: number,

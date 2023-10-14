@@ -21,29 +21,39 @@ export class NumVariable implements VariableLike<number> {
     const [min, max] = minMax(array);
     this.meta = { min, max };
   }
-  static from = (array: number[]) => new NumVariable(array);
+  static from(array: number[]) {
+    return new NumVariable(array);
+  }
 
-  empty = () => {
+  empty() {
     this.array.length = 0;
     this.meta.min = Infinity;
     this.meta.max = -Infinity;
-  };
+  }
 
-  values = () => this.array;
-  ith = (indexfn: Lazy<number>) => Num.of(View.of(this.array, indexfn));
+  values() {
+    return this.array;
+  }
 
-  push = (num: Num) => {
+  ith(indexfn: Lazy<number>) {
+    return Num.of(View.of(this.array, indexfn));
+  }
+
+  push(num: Num) {
     const value = num.value();
     this.array.push(value);
     this.meta.min = Math.min(this.meta.min, value);
     this.meta.max = Math.max(this.meta.max, value);
     return this.array.length;
-  };
+  }
 
-  isOfLength = (n: number) => this.array.length === n;
-  bin = (width: ValueLike<number>, anchor: ValueLike<number>) => {
+  isOfLength(n: number) {
+    return this.array.length === n;
+  }
+
+  bin(width: ValueLike<number>, anchor: ValueLike<number>) {
     return Factor.bin(this.array, width.value(), anchor.value());
-  };
+  }
 }
 
 export class StrVariable implements VariableLike<string> {
@@ -55,17 +65,24 @@ export class StrVariable implements VariableLike<string> {
     this.meta = { values: Array.from(new Set(this.array)).sort(alNumCompare) };
   }
 
-  static from = (array: any[]) => new StrVariable(array);
+  static from(array: any[]) {
+    return new StrVariable(array);
+  }
 
   empty = () => {
     this.array.length = 0;
     this.meta.values.length = 0;
   };
 
-  values = () => this.array;
-  ith = (indexfn: Lazy<number>) => Str.of(View.of(this.array, indexfn));
+  values() {
+    return this.array;
+  }
 
-  push = (str: Str) => {
+  ith(indexfn: Lazy<number>) {
+    return Str.of(View.of(this.array, indexfn));
+  }
+
+  push(str: Str) {
     const value = str.value();
     this.array.push(value);
 
@@ -75,24 +92,40 @@ export class StrVariable implements VariableLike<string> {
     }
 
     return this.array.length;
-  };
+  }
 
-  isOfLength = (n: number) => this.array.length === n;
-  factor = (labels?: string[]) => Factor.from(this.array, labels);
+  isOfLength(n: number) {
+    return this.array.length === n;
+  }
+
+  factor(labels?: string[]) {
+    return Factor.from(this.array, labels);
+  }
 }
 
 export class RefVariable implements VariableLike<any> {
   constructor(private array: any[], public key?: string) {}
   static from = (array: any[]) => new RefVariable(array);
 
-  empty = () => {
+  empty() {
     this.array.length = 0;
-  };
+  }
 
-  values = () => this.array;
-  ith = (indexfn: Lazy<number>) => Ref.of(View.of(this.array, indexfn));
-  push = (ref: Ref) => this.array.push(ref.value());
-  isOfLength = (n: number) => this.array.length === n;
+  values() {
+    return this.array;
+  }
+
+  ith(indexfn: Lazy<number>) {
+    return Ref.of(View.of(this.array, indexfn));
+  }
+
+  push(ref: Ref) {
+    return this.array.push(ref.value());
+  }
+
+  isOfLength(n: number) {
+    return this.array.length === n;
+  }
 }
 
 export class TranslatedVariable<T> implements VariableLike<T> {
@@ -105,27 +138,54 @@ export class TranslatedVariable<T> implements VariableLike<T> {
     this.meta = this.variable.meta;
   }
 
-  empty = () => this.variable.empty();
-  ith = (indexfn: Lazy<number>) => this.variable.ith(this.translatefn(indexfn));
-  values = () => this.variable.values();
-  push = (scalar: ScalarLike<T>) => this.variable.push(scalar);
-  isOfLength = (n: number) => this.variable.isOfLength(n);
+  empty() {
+    this.variable.empty();
+  }
+
+  ith(indexfn: Lazy<number>) {
+    return this.variable.ith(this.translatefn(indexfn));
+  }
+
+  values() {
+    return this.variable.values();
+  }
+
+  push(scalar: ScalarLike<T>) {
+    return this.variable.push(scalar);
+  }
+  isOfLength(n: number) {
+    return this.variable.isOfLength(n);
+  }
 }
 
 export class ConstantVariable implements VariableLike<any> {
-  variable: VariableLike<any>;
+  private variable: VariableLike<any>;
   meta?: Record<string, any>;
 
-  constructor(scalarLike: ScalarLike<any>) {
+  constructor(scalarLike: ScalarLike<any>, private index = 0) {
     this.variable = scalarLike.toVariable();
     this.meta = this.variable.meta;
   }
 
-  static of = (scalarLike: ScalarLike<any>) => new ConstantVariable(scalarLike);
+  static of(scalarLike: ScalarLike<any>) {
+    return new ConstantVariable(scalarLike);
+  }
 
-  empty = () => {};
-  ith = () => this.variable.ith(lazy(0));
-  values = () => [this.variable.ith(lazy(0))];
-  push = () => 1;
-  isOfLength = () => true;
+  empty() {}
+
+  ith() {
+    return this.variable.ith(lazy(this.index));
+  }
+
+  values() {
+    return [this.variable.ith(lazy(0))];
+  }
+
+  push() {
+    return 1;
+  }
+
+  isOfLength() {
+    return true;
+  }
 }

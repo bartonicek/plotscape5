@@ -7,7 +7,7 @@ import {
 } from "./Variable";
 
 export type ScalarLike<T> = ValueLike<T> & {
-  toVariable: () => VariableLike<T>;
+  toVariable(): VariableLike<T>;
 };
 
 export const num = (x: number) => Num.of(Value.of(x));
@@ -22,43 +22,87 @@ export const isScalar = (x: any) => {
 export class Num implements ScalarLike<number> {
   constructor(private valueLike: ValueLike<number>) {}
 
-  static of = (valueLike: ValueLike<number>) => new Num(valueLike);
+  static of(valueLike: ValueLike<number>) {
+    return new Num(valueLike);
+  }
 
-  value = () => this.valueLike.value();
-  toVariable = () => NumVariable.from([this.value()]);
+  value() {
+    return this.valueLike.value();
+  }
 
-  inc = () => num(this.value() + 1);
-  dec = () => num(this.value() - 1);
+  toVariable() {
+    return NumVariable.from([this.value()]);
+  }
 
-  add = (other: Num) => num(this.value() + other.value());
-  minus = (other: Num) => num(this.value() - other.value());
-  times = (other: Num) => num(this.value() * other.value());
-  divideBy = (other: Num) => num(this.value() / other.value());
+  inc() {
+    return num(this.value() + 1);
+  }
+
+  dec() {
+    return num(this.value() - 1);
+  }
+
+  add(other: Num) {
+    return num(this.value() + other.value());
+  }
+
+  minus(other: Num) {
+    return num(this.value() - other.value());
+  }
+
+  times(other: Num) {
+    return num(this.value() * other.value());
+  }
+
+  divideBy(other: Num) {
+    return num(this.value() / other.value());
+  }
 }
 
 export class Str implements ScalarLike<string> {
   constructor(private valueLike: ValueLike<string>) {}
 
-  static of = (valueLike: ValueLike<string>) => new Str(valueLike);
+  static of(valueLike: ValueLike<string>) {
+    return new Str(valueLike);
+  }
 
-  value = () => this.valueLike.value();
-  toVariable = () => StrVariable.from([this.value()]);
+  value() {
+    return this.valueLike.value();
+  }
+
+  toVariable() {
+    return StrVariable.from([this.value()]);
+  }
 }
 
 export class Ref implements ScalarLike<any> {
   constructor(private valueLike: ValueLike<any>) {}
 
-  static of = (valueLike: ValueLike<any>) => new Ref(valueLike);
+  static of(valueLike: ValueLike<any>) {
+    return new Ref(valueLike);
+  }
 
-  value = () => this.valueLike.value();
-  toVariable = () => RefVariable.from([this.value()]);
+  value() {
+    return this.valueLike.value();
+  }
+
+  toVariable() {
+    return RefVariable.from([this.value()]);
+  }
 }
 
 export class None implements ScalarLike<any> {
   constructor() {}
 
-  static of = () => new None();
+  static of() {
+    return new None();
+  }
 
-  value = () => undefined;
-  toVariable = () => RefVariable.from([]);
+  value() {
+    return undefined;
+  }
+
+  toVariable() {
+    return RefVariable.from([]);
+  }
 }

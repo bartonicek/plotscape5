@@ -1,42 +1,76 @@
 import { ValueLike } from "../structs/Value";
 import { Key } from "./types";
 
-export const identity = <T>(x: T) => x;
-export const call = (fn: (...args: any[]) => any) => fn();
-export const noop = () => {};
-export const lazy =
-  <T>(x: T) =>
-  () =>
-    x;
-export const firstArgument = <T>(x: T, _: any) => x;
-export const secondArgument = <T>(_: any, y: T) => y;
-export const POJO = () => ({});
+// Higher order function utilities
 
-export const toString = (x: any) => x.toString();
-export const toInt = (x: string) => parseInt(x, 10);
+export function identity<T>(x: T) {
+  return x;
+}
 
-export const diff = (x: number, y: number) => x - y;
-export const sum = (x: number, y: number) => x + y;
-export const alNumCompare = (a: string, b: string) => {
+export function call(fn: (...args: any[]) => any) {
+  return fn();
+}
+
+export function noop() {}
+
+export function lazy<T>(x: T) {
+  return () => x;
+}
+
+export function firstArgument<T>(x: T, _: any) {
+  return x;
+}
+
+export function secondArgument<T>(_: any, y: T) {
+  return y;
+}
+
+export function POJO() {
+  return {};
+}
+
+// Simple unary functions
+
+export function toString(x: any) {
+  return x.toString();
+}
+
+export function toInt(x: string) {
+  return parseInt(x, 10);
+}
+
+// Simple binary functions
+
+export function diff(x: number, y: number) {
+  return x - y;
+}
+
+export function sum(x: number, y: number) {
+  return x + y;
+}
+
+export function alNumCompare(a: string, b: string) {
   return a.localeCompare(b, "en", { numeric: true });
-};
+}
 
-export const seq = (start: number, end: number) => {
+// Array functions
+
+export function seq(start: number, end: number) {
   const length = Math.abs(end - start) + 1;
   const sign = end >= start ? 1 : -1;
   return Array.from(Array(length), (_, i) => start + sign * i);
-};
+}
 
-export const minMax = (x: number[]) => {
+export function minMax(x: number[]) {
   let [min, max] = [Infinity, -Infinity];
   for (let i = 0; i < x.length; i++) {
     min = Math.min(min, x[i]);
     max = Math.max(max, x[i]);
   }
   return [min, max];
-};
+}
 
-export const orderBy = <T>(array: T[], orderArray: number[]) => {
+export function orderBy<T>(array: T[], orderArray: number[]) {
   const result = [...array];
   result.sort((a, b) => {
     return Math.sign(
@@ -45,36 +79,46 @@ export const orderBy = <T>(array: T[], orderArray: number[]) => {
   });
 
   return result;
-};
+}
 
-export const allKeys = <T extends Record<Key, any>>(x: T) => {
+// Object functions
+
+export function allKeys<T extends Record<Key, any>>(x: T) {
   return Reflect.ownKeys(x) as (keyof T)[];
-};
+}
 
-export const allValues = <T extends Record<Key, any>>(x: T) => {
-  const result = [] as { [key in keyof T]: T[key] }[keyof T][];
+export function allValues<T extends Record<Key, any>>(x: T) {
+  const result = [] as {
+    [key in keyof T]: T[key];
+  }[keyof T][];
   for (const k of allKeys(x)) result.push(x[k]);
   return result;
-};
+}
 
-export const allEntries = <T extends Record<Key, any>>(x: T) => {
-  const result = [] as { [key in keyof T]: [key, T[key]] }[keyof T][];
+export function allEntries<T extends Record<Key, any>>(x: T) {
+  const result = [] as {
+    [key in keyof T]: [key, T[key]];
+  }[keyof T][];
   for (const k of allKeys(x)) result.push([k, x[k]]);
   return result;
-};
+}
 
-export const unwrapAll = <T extends Record<Key, ValueLike<any>>>(x: T) => {
-  const result = {} as { [key in keyof T]: ReturnType<T[key]["value"]> };
+export function unwrapAll<T extends Record<Key, ValueLike<any>>>(x: T) {
+  const result = {} as {
+    [key in keyof T]: ReturnType<T[key]["value"]>;
+  };
   for (const [k, v] of allEntries(x)) result[k] = v.value();
   return result;
-};
+}
 
-export const loadData = async (path: string) => {
+// Other
+
+export async function loadData(path: string) {
   const result = await fetch(path);
   return await result.json();
-};
+}
 
-export const throttle = (fun: Function, delay: number) => {
+export function throttle(fun: Function, delay: number) {
   let lastTime = 0;
   return (...args: any[]) => {
     const now = new Date().getTime();
@@ -82,14 +126,14 @@ export const throttle = (fun: Function, delay: number) => {
     lastTime = now;
     fun(...args);
   };
-};
+}
 
-export const rectOverlap = (
+export function rectOverlap(
   rect1x: [number, number],
   rect1y: [number, number],
   rect2x: [number, number],
   rect2y: [number, number]
-) => {
+) {
   const [r1xmin, r1xmax] = minMax(rect1x);
   const [r1ymin, r1ymax] = minMax(rect1y);
   const [r2xmin, r2xmax] = minMax(rect2x);
@@ -101,4 +145,4 @@ export const rectOverlap = (
     r1ymax < r2ymin ||
     r1ymin > r2ymax
   );
-};
+}
