@@ -1,6 +1,5 @@
 {
   "name": "@abartonicek/plotscape5",
-  "private": true,
   "version": "0.0.1",
   "type": "module",
   "main": "dist/plotscape5.js",
