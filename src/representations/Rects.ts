@@ -18,12 +18,12 @@ export default class Rects implements Representation {
   draw = () => {
     const { contexts, partData, scaleX, scaleY } = this.adapter;
 
-    const data2 = partData(2) as any;
+    const data = partData(2);
 
     // Clear previous paints
     for (const layer of groupContexts) drawClear(contexts[layer]);
 
-    for (const row of data2) {
+    for (const row of data) {
       const x0 = scaleX(row.x0.value());
       const x1 = scaleX(row.x1.value());
       const y0 = scaleY(row.y0.value());

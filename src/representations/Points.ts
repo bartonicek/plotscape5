@@ -34,15 +34,13 @@ export default class Points implements Representation {
     const radiusMult = this.radiusMult();
     const { radius } = graphicParameters;
 
+    const data = partData(2);
     const rad = radius * radiusMult;
-
-    const data1 = partData(1);
-    const data2 = partData(2);
 
     // Clear previous paints
     for (const layer of groupContexts) drawClear(contexts[layer]);
 
-    for (const row of data2) {
+    for (const row of data) {
       const x = scaleX(row.x.value());
       const y = scaleY(row.y.value());
 
@@ -74,14 +72,10 @@ export default class Points implements Representation {
       const x = scaleX(row.x.value());
       const y = scaleY(row.y.value());
 
-      if (
-        rectOverlap(
-          [x - radius, x + radius],
-          [y - radius, y + radius],
-          selX,
-          selY
-        )
-      ) {
+      const x0x1 = [x - radius, x + radius] as [number, number];
+      const y0y1 = [y - radius, y + radius] as [number, number];
+
+      if (rectOverlap(x0x1, y0y1, selX, selY)) {
         for (const i of row[positionsSymbol].value()) selected.add(i);
       }
     }

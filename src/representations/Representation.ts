@@ -3,5 +3,5 @@ export type Representation = {
   checkSelection: (
     selectionRect: [number, number, number, number]
   ) => Set<number>;
-  keyActions: Record<string, any>;
+  keyActions?: Record<string, any>;
 };

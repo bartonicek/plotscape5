@@ -79,8 +79,19 @@ class Mono implements FactorLike<any> {
     const ith = (indexfn: Lazy<number>) => {
       if (indexfn() === 0) return ref(new Set(seq(0, this.n)));
     };
+    const values = () => {
+      const result = Array(this.n);
+      for (let i = 0; i < this.n; i++) result[i] = ith(lazy(i));
+      return result;
+    };
 
-    const positions: VariableLike<object> = { ith, push, empty, isOfLength };
+    const positions: VariableLike<object> = {
+      ith,
+      push,
+      values,
+      empty,
+      isOfLength,
+    };
     return new Dataframe(1, { [positionsSymbol]: positions });
   };
 }
@@ -106,16 +117,27 @@ class Iso implements FactorLike<any> {
     const ith = (indexfn: Lazy<number>) => {
       if (indexfn() < this.n) return ref(new Set([indexfn()]));
     };
+    const values = () => {
+      const result = Array(this.n);
+      for (let i = 0; i < this.n; i++) result[i] = ith(lazy(i));
+      return result;
+    };
 
-    const positions: VariableLike<object> = { ith, push, empty, isOfLength };
+    const positions: VariableLike<object> = {
+      ith,
+      push,
+      values,
+      empty,
+      isOfLength,
+    };
     return new Dataframe(this.n, { [positionsSymbol]: positions });
   };
 }
 
 class Computed<T extends Cols> implements FactorLike<T> {
   constructor(
-    private _uniqueIndices: Set<number>,
-    private _indices: number[],
+    public _uniqueIndices: Set<number>,
+    public _indices: number[],
     public _data: Dataframe<T>
   ) {}
 

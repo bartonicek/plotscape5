@@ -64,10 +64,7 @@ export class Dataframe<T extends Cols> {
     const cols = {} as { [key in keyof V]: ColTypeMap[V[key]] };
 
     for (const [k, v] of allEntries(spec)) {
-      cols[k] = new colConstructorMap[v](
-        unparsed[k as keyof U],
-        k as string
-      ) as any;
+      cols[k] = new colConstructorMap[v](unparsed[k as keyof U]) as any;
     }
 
     return Dataframe.from(Object.values(unparsed)[0].length, cols);

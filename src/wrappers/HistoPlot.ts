@@ -11,6 +11,7 @@ import { sig } from "../structs/Value";
 import { NumVariable } from "../structs/Variable";
 import { noop } from "../utils/funs";
 import { Cols, KeysOfType } from "../utils/types";
+import { binCount1D } from "./recipes";
 
 export class HistoPlot<T extends Cols> {
   plot: Plot;
@@ -45,41 +46,23 @@ export class HistoPlot<T extends Cols> {
     const marker = scene.marker.factor;
 
     const factors = [whole, bins, marker];
-
-    const partitionSet = new PartitionSet(factors, data)
-      .reduce(
-        ({ count }, _) => ({ count: count.inc() }),
-        () => ({ count: num(0) })
-      )
-      .map(({ binMin, binMax, count }) => ({
-        x0: binMin,
-        x1: binMax,
-        y0: num(0),
-        y1: count,
-      }))
-      .stackAt(
-        2,
-        (parent, part) => ({ y0: parent.y1, y1: parent.y1.add(part.y1) }),
-        () => ({ y0: num(0), y1: num(0) })
-      )
-      .update();
-
-    this.partitionSet = partitionSet;
+    this.partitionSet = new PartitionSet(factors, data).apply(binCount1D);
+    const p1 = () => this.partitionSet.partData(1);
 
     for (const scale of Object.values(plot.scales)) {
       scale.data.x = scale.data.x.setDomain!(
-        sig(() => (partitionSet.partData(1).cols.x0 as NumVariable).meta.min),
-        sig(() => (partitionSet.partData(1).cols.x1 as NumVariable).meta.max)
+        sig(() => (p1().cols.x0 as NumVariable).meta.min),
+        sig(() => (p1().cols.x1 as NumVariable).meta.max)
       );
       scale.data.y = scale.data.y.setDomain!(
         num(0),
-        sig(() => (partitionSet.partData(1).cols.y1 as NumVariable).meta.max)
+        sig(() => (p1().cols.y1 as NumVariable).meta.max)
       );
     }
 
     this.plot.store.setNormYLower = noop;
 
-    const adapter = new Adapter(plot.contexts, partitionSet, plot.scales);
+    const adapter = new Adapter(plot.contexts, this.partitionSet, plot.scales);
     const bars = new Rects(adapter);
 
     plot.pushRepresentation(bars);

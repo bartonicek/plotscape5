@@ -30,10 +30,7 @@ export class NumVariable implements VariableLike<number> {
   };
 
   values = () => this.array;
-
-  ith = (indexfn: Lazy<number>) => {
-    return Num.of(View.of(this.array, indexfn));
-  };
+  ith = (indexfn: Lazy<number>) => Num.of(View.of(this.array, indexfn));
 
   push = (num: Num) => {
     const value = num.value();
@@ -44,7 +41,6 @@ export class NumVariable implements VariableLike<number> {
   };
 
   isOfLength = (n: number) => this.array.length === n;
-
   bin = (width: ValueLike<number>, anchor: ValueLike<number>) => {
     return Factor.bin(this.array, width.value(), anchor.value());
   };
@@ -67,10 +63,7 @@ export class StrVariable implements VariableLike<string> {
   };
 
   values = () => this.array;
-
-  ith = (indexfn: Lazy<number>) => {
-    return Str.of(View.of(this.array, indexfn));
-  };
+  ith = (indexfn: Lazy<number>) => Str.of(View.of(this.array, indexfn));
 
   push = (str: Str) => {
     const value = str.value();
@@ -85,7 +78,6 @@ export class StrVariable implements VariableLike<string> {
   };
 
   isOfLength = (n: number) => this.array.length === n;
-
   factor = (labels?: string[]) => Factor.from(this.array, labels);
 }
 
@@ -98,10 +90,8 @@ export class RefVariable implements VariableLike<any> {
   };
 
   values = () => this.array;
-
   ith = (indexfn: Lazy<number>) => Ref.of(View.of(this.array, indexfn));
   push = (ref: Ref) => this.array.push(ref.value());
-
   isOfLength = (n: number) => this.array.length === n;
 }
 
@@ -116,13 +106,9 @@ export class TranslatedVariable<T> implements VariableLike<T> {
   }
 
   empty = () => this.variable.empty();
-
   ith = (indexfn: Lazy<number>) => this.variable.ith(this.translatefn(indexfn));
-
   values = () => this.variable.values();
-
   push = (scalar: ScalarLike<T>) => this.variable.push(scalar);
-
   isOfLength = (n: number) => this.variable.isOfLength(n);
 }
 
@@ -141,6 +127,5 @@ export class ConstantVariable implements VariableLike<any> {
   ith = () => this.variable.ith(lazy(0));
   values = () => [this.variable.ith(lazy(0))];
   push = () => 1;
-
   isOfLength = () => true;
 }

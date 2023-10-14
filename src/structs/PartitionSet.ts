@@ -28,6 +28,8 @@ export class PartitionSet<T extends Cols> {
     return this;
   };
 
+  apply = (fn: any) => fn(this);
+
   reduce = <U extends Row>(reducefn: ReduceFn<RowOf<T>, U>, init: Lazy<U>) => {
     for (const recipe of this.recipes) recipe.reduce(reducefn, init);
     return this;

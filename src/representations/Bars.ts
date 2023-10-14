@@ -9,7 +9,7 @@ import {
   transientSymbol,
 } from "../structs/Symbols";
 import { drawClear, drawRect } from "../utils/drawfuns";
-import { lazy, rectOverlap } from "../utils/funs";
+import { rectOverlap } from "../utils/funs";
 import { Representation } from "./Representation";
 import { transientOptions } from "./transientOpts";
 
@@ -33,18 +33,13 @@ export default class Bars implements Representation {
     const { contexts, partData, scaleX, scaleY, breakWidthX } = this.adapter;
     const widthPct = this.widthPct();
 
-    const data1 = partData(1);
-    const data2 = partData(2);
-
-    const initx1 = scaleX(data1.row(lazy(1)).x.value());
-    const initx0 = scaleX(data1.row(lazy(0)).x.value());
-
+    const data = partData(2);
     const width = breakWidthX() * widthPct;
 
     // Clear previous paints
     for (const layer of groupContexts) drawClear(contexts[layer]);
 
-    for (const row of data2) {
+    for (const row of data) {
       const x0 = scaleX(row.x.value()) - width / 2;
       const x1 = scaleX(row.x.value()) + width / 2;
       const y0 = scaleY(row.y0.value());

@@ -9,6 +9,7 @@ import { sig } from "../structs/Value";
 import { NumVariable } from "../structs/Variable";
 import { allValues } from "../utils/funs";
 import { Cols, KeysOfType } from "../utils/types";
+import { identity2D } from "./recipes";
 
 export class ScatterPlot<T extends Cols> {
   data: Dataframe<{ var1: NumVariable; var2: NumVariable }>;
@@ -32,25 +33,21 @@ export class ScatterPlot<T extends Cols> {
     const marker = scene.marker.factor;
 
     const factors = [whole, iso, marker];
-
-    const partitionSet = new PartitionSet(factors, data)
-      .map(({ var1, var2 }) => ({ x: var1, y: var2 }))
-      .update();
-
-    this.partitionSet = partitionSet;
+    this.partitionSet = new PartitionSet(factors, data).apply(identity2D);
+    const p1 = () => this.partitionSet.partData(1);
 
     for (const scale of allValues(plot.scales)) {
       scale.data.x = scale.data.x.setDomain!(
-        sig(() => (partitionSet.partData(1).cols.x as NumVariable).meta.min),
-        sig(() => (partitionSet.partData(1).cols.x as NumVariable).meta.max)
+        sig(() => (p1().cols.x as NumVariable).meta.min),
+        sig(() => (p1().cols.x as NumVariable).meta.max)
       );
       scale.data.y = scale.data.y.setDomain!(
-        sig(() => (partitionSet.partData(1).cols.y as NumVariable).meta.min),
-        sig(() => (partitionSet.partData(1).cols.y as NumVariable).meta.max)
+        sig(() => (p1().cols.y as NumVariable).meta.min),
+        sig(() => (p1().cols.y as NumVariable).meta.max)
       );
     }
 
-    const adapter = new Adapter(plot.contexts, partitionSet, plot.scales);
+    const adapter = new Adapter(plot.contexts, this.partitionSet, plot.scales);
     const points = new Points(adapter);
 
     plot.pushRepresentation(points);

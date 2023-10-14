@@ -9,8 +9,9 @@ import { PartitionSet } from "../structs/PartitionSet";
 import { num } from "../structs/Scalar";
 import { sig } from "../structs/Value";
 import { NumVariable, StrVariable } from "../structs/Variable";
-import { alNumCompare, allValues, noop, orderBy } from "../utils/funs";
+import { allValues, noop, orderBy } from "../utils/funs";
 import { Cols, KeysOfType } from "../utils/types";
+import { catCount1D } from "./recipes";
 
 export class BarPlot<T extends Cols> {
   data: Dataframe<{ var1: StrVariable }>;
@@ -36,21 +37,7 @@ export class BarPlot<T extends Cols> {
     const marker = scene.marker.factor;
 
     this.factors = [whole, factor, marker];
-
-    const partitionSet = new PartitionSet(this.factors, data)
-      .reduce(
-        ({ count }, {}) => ({ count: count.inc() }),
-        () => ({ count: num(0) })
-      )
-      .map(({ label, count }) => ({ x: label, y0: num(0), y1: count }))
-      .stackAt(
-        2,
-        (parent, part) => ({ y0: parent.y1, y1: parent.y1.add(part.y1) }),
-        () => ({ y0: num(0), y1: num(0) })
-      )
-      .update();
-
-    this.partitionSet = partitionSet;
+    this.partitionSet = new PartitionSet(this.factors, data).apply(catCount1D);
 
     const p1 = () => this.partitionSet.partData(1);
 
@@ -67,7 +54,7 @@ export class BarPlot<T extends Cols> {
     this.plot.store.setNormYLower = noop;
 
     const counts = () => p1().cols.y1.values();
-    const labs = () => p1().cols.x.values();
+    const labs = () => data.cols.var1.meta.values;
     const orderedLabels = () => orderBy(labs(), counts());
 
     let orderSwitch = true;
@@ -78,13 +65,13 @@ export class BarPlot<T extends Cols> {
           setLabels(orderedLabels());
           orderSwitch = false;
         } else {
-          setLabels(labs().sort(alNumCompare));
+          setLabels(labs());
           orderSwitch = true;
         }
       },
     });
 
-    const adapter = new Adapter(plot.contexts, partitionSet, plot.scales);
+    const adapter = new Adapter(plot.contexts, this.partitionSet, plot.scales);
     const bars = new Bars(adapter);
 
     plot.pushRepresentation(bars);
