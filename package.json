@@ -1,12 +1,16 @@
 {
   "name": "@abartonicek/plotscape5",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": false,
   "type": "module",
   "main": "dist/plotscape5.js",
   "types": "dist/main.d.ts",
-  "files": ["dist"],
-  "sideEffect": ["**/*.css"],
+  "files": [
+    "dist"
+  ],
+  "sideEffect": [
+    "**/*.css"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc --p ./tsconfig-build.json && vite build",
@@ -20,8 +24,7 @@
     "vite-plugin-lib-inject-css": "^1.3.0",
     "vite-plugin-dts": "^3.6.0"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "publishConfig": {
     "access": "public"
   }
