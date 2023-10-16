@@ -25,7 +25,10 @@ import {
   loadData,
 } from "@abartonicek/plotscape5";
 
-const mpgJSON = await loadData("./mpg.json");
+const mpgJSON = await loadData(
+  "https://raw.githubusercontent.com/bartonicek/plotscape5/master/public/mpg.json"
+);
+
 const schemeMpg = {
   cyl: "discrete",
   manufacturer: "discrete",
