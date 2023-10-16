@@ -100,10 +100,11 @@ export class Plot {
         // then norm.unnormalize(0.3) should be 0
         const xRange = 1 / (xUpper - xLower);
         const yRange = 1 / (yUpper - yLower);
+
         batch(() => {
           store.setNormXLower(-xLower * xRange);
-          store.setNormYLower(-yLower * yRange);
           store.setNormXUpper(-xLower * xRange + xRange);
+          store.setNormYLower(-yLower * yRange);
           store.setNormYUpper(-yLower * yRange + yRange);
         });
 

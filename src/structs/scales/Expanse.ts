@@ -17,15 +17,15 @@ export class Expanse {
     return this;
   }
 
-  range() {
+  range = () => {
     return this.upper.value() - this.lower.value();
-  }
+  };
 
-  normalize(x: number) {
+  normalize = (x: number) => {
     return (x - this.lower.value()) / this.range();
-  }
+  };
 
-  unnormalize(pct: number) {
+  unnormalize = (pct: number) => {
     return pct * this.range() + this.lower.value();
-  }
+  };
 }
