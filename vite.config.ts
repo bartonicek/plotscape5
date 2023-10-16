@@ -16,7 +16,7 @@ export default defineConfig({
     dts({
       include: ["lib"],
       insertTypesEntry: true,
-      rollupTypes: true,
+      // rollupTypes: true,
       beforeWriteFile: (filePath, content) => ({
         filePath: filePath.replace("lib", ""),
         content,
