@@ -21,6 +21,7 @@ import {
   HistoPlot,
   ScatterPlot,
   Scene,
+  createRoot,
   loadData,
 } from "@abartonicek/plotscape5";
 

@@ -6,7 +6,7 @@
   "main": "dist/plotscape5.js",
   "types": "dist/main.d.ts",
   "files": [
-    "dist"
+    "dist/*"
   ],
   "sideEffect": [
     "**/*.css"
