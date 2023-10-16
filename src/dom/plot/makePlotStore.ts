@@ -2,7 +2,7 @@ import { createSignal } from "solid-js";
 import { lazy } from "../../utils/funs";
 import graphicParameters from "../graphicParameters";
 
-const makePlotStore = () => {
+export const makePlotStore = () => {
   const [active, setActive] = createSignal(false);
 
   const [width, setWidth] = createSignal(0);
@@ -88,5 +88,4 @@ const makePlotStore = () => {
   return store;
 };
 
-export default makePlotStore;
 export type PlotStore = ReturnType<typeof makePlotStore>;

@@ -10,13 +10,12 @@ import graphicParameters from "../graphicParameters";
 import { Scene } from "../scene/Scene";
 import { Contexts, contexts } from "./Contexts";
 import { makeCanvasContext } from "./makeCanvasContext";
-import makeExpanses, { PlotExpanses } from "./makeExpanses";
-import makePlotStore, { PlotStore } from "./makePlotStore";
-import makeScales, { PlotScales } from "./makeScales";
+import { PlotExpanses, makeExpanses } from "./makeExpanses";
+import { PlotStore, makePlotStore } from "./makePlotStore";
+import { PlotScales, makeScales } from "./makeScales";
 
 export class Plot {
   container: HTMLDivElement;
-  // state: PlotStateMachine;
 
   store: PlotStore;
   expanses: PlotExpanses;
@@ -34,8 +33,6 @@ export class Plot {
     ></div>` as HTMLDivElement;
     this.container = container;
     scene.app.appendChild(container);
-
-    // this.state = new PlotStateMachine(this);
 
     window.addEventListener("resize", throttle(this.onResize, 50));
     container.addEventListener("mousedown", this.onMouseDown);

@@ -1,4 +1,5 @@
-import { ValueLike, val } from "../structs/Value";
+import { val } from "../values/utils";
+import { ValueLike } from "../values/ValueLike";
 
 export class Expanse {
   constructor(

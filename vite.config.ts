@@ -15,6 +15,8 @@ export default defineConfig({
     libInjectCss(),
     dts({
       include: ["lib"],
+      insertTypesEntry: true,
+      rollupTypes: true,
       beforeWriteFile: (filePath, content) => ({
         filePath: filePath.replace("lib", ""),
         content,

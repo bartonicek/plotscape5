@@ -1,4 +1,4 @@
-import { ValueLike } from "../structs/Value";
+import { ValueLike } from "../structs/values/ValueLike";
 import { Key } from "./types";
 
 // Higher order function utilities
@@ -31,7 +31,7 @@ export function POJO() {
 
 // Simple unary functions
 
-export function toString(x: any) {
+export function stringify(x: any) {
   return x.toString();
 }
 

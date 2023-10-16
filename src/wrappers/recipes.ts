@@ -1,5 +1,5 @@
-import { PartitionSet } from "../structs/PartitionSet";
-import { num } from "../structs/Scalar";
+import { PartitionSet } from "../structs/partitions/PartitionSet";
+import { num } from "../structs/scalars/utils";
 
 export const identity2D = (partitionSet: PartitionSet<any>) =>
   partitionSet.map(({ var1, var2 }) => ({ x: var1, y: var2 })).update();

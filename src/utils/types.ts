@@ -1,10 +1,11 @@
-import { Num, Ref, ScalarLike, Str } from "../structs/Scalar";
-import {
-  NumVariable,
-  RefVariable,
-  StrVariable,
-  VariableLike,
-} from "../structs/Variable";
+import { Num } from "../structs/scalars/Num";
+import { Ref } from "../structs/scalars/Ref";
+import { ScalarLike } from "../structs/scalars/ScalarLike";
+import { Str } from "../structs/scalars/Str";
+import { NumVariable } from "../structs/variables/NumVariable";
+import { RefVariable } from "../structs/variables/RefVariable";
+import { StrVariable } from "../structs/variables/StrVariable";
+import { VariableLike } from "../structs/variables/VariableLike";
 
 export type MapFn<T, U> = (next: T) => U;
 export type ReduceFn<T, U> = (prev: U, next: T) => U;

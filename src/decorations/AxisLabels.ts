@@ -3,7 +3,7 @@ import graphicParameters from "../dom/graphicParameters";
 import { Plot } from "../dom/plot/Plot";
 import { makeCanvasContext } from "../dom/plot/makeCanvasContext";
 import { PlotStore } from "../dom/plot/makePlotStore";
-import { Scale } from "../structs/Scale";
+import { ScaleLike } from "../structs/scales/ScaleLike";
 import drawText, { drawClear } from "../utils/drawfuns";
 
 const axisAlign = {
@@ -23,7 +23,7 @@ export class AxisLabels<T extends string | number> {
   along: "x" | "y";
   tol: number;
   context: CanvasRenderingContext2D;
-  scales: { x: Scale; y: Scale };
+  scales: { x: ScaleLike; y: ScaleLike };
   store: PlotStore;
 
   constructor(plot: Plot, along: "x" | "y") {

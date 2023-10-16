@@ -1,12 +1,14 @@
 import { POJO, identity, secondArgument } from "../utils/funs";
 import { Cols, Lazy, MapFn, ReduceFn, Row } from "../utils/types";
 
-const stateinit = () => ({
-  reduced: false,
-  mapped: false,
-  stacked: false,
-  relabeled: false,
-});
+function stateinit() {
+  return {
+    reduced: false,
+    mapped: false,
+    stacked: false,
+    relabeled: false,
+  };
+}
 
 type RecipeState = ReturnType<typeof stateinit>;
 
@@ -21,7 +23,7 @@ export class Recipe<T extends Row, U extends Row, V extends Row> {
     public state: RecipeState
   ) {}
 
-  static default = <T extends Row>() => {
+  static default<T extends Row>() {
     return new Recipe<T, Row, Row>(
       secondArgument,
       POJO,
@@ -31,31 +33,31 @@ export class Recipe<T extends Row, U extends Row, V extends Row> {
       identity,
       stateinit()
     );
-  };
+  }
 
-  reduce = <U2 extends Row>(reducefn: ReduceFn<T, U2>, init: Lazy<U2>) => {
+  reduce<U2 extends Row>(reducefn: ReduceFn<T, U2>, init: Lazy<U2>) {
     this.reducefn = reducefn as any;
     this.reduceinit = init as any;
     this.state.reduced = true;
     return this as unknown as Recipe<T, U2, V>;
-  };
+  }
 
-  map = <V2 extends Row>(mapfn: MapFn<U, V2>) => {
+  map<V2 extends Row>(mapfn: MapFn<U, V2>) {
     this.mapfn = mapfn as any;
     this.state.mapped = true;
     return this as unknown as Recipe<T, U, V2>;
-  };
+  }
 
-  stack = <V2 extends Row>(stacfkn: ReduceFn<V2, V2>, init: Lazy<V2>) => {
+  stack<V2 extends Row>(stacfkn: ReduceFn<V2, V2>, init: Lazy<V2>) {
     this.stackfn = stacfkn as any;
     this.stackinit = init as any;
     this.state.stacked = true;
     return this as unknown as Recipe<T, U, V2>;
-  };
+  }
 
-  relabel = <W2 extends Cols>(relabelfn: MapFn<Cols, W2>) => {
+  relabel<W2 extends Cols>(relabelfn: MapFn<Cols, W2>) {
     this.relabelfn = relabelfn;
     this.state.relabeled = true;
     return this as unknown as Recipe<T, U, V>;
-  };
+  }
 }

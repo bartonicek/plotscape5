@@ -1,13 +1,18 @@
 import { Accessor, createMemo, untrack } from "solid-js";
-import { allEntries, allKeys, lazy } from "../utils/funs";
-import { Cols, Key, Row, RowOf } from "../utils/types";
-import { Dataframe } from "./Dataframe";
-import { Factor, FactorLike } from "./Factor";
-import { Recipe } from "./Recipe";
-import { None, ScalarLike, isScalar, none } from "./Scalar";
-import { SlidingRow } from "./SlidingRow";
-import { parentSymbol, stackSymbol, symbols } from "./Symbols";
-import { ConstantVariable, RefVariable, VariableLike } from "./Variable";
+import { allEntries, allKeys, lazy } from "../../utils/funs";
+import { Cols, Key, Row, RowOf } from "../../utils/types";
+import { Dataframe } from "../Dataframe";
+import { Recipe } from "../Recipe";
+import { SlidingRow } from "../SlidingRow";
+import { parentSymbol, stackSymbol, symbols } from "../Symbols";
+import { Factor } from "../factors/Factor";
+import { FactorLike } from "../factors/FactorLike";
+import { None } from "../scalars/None";
+import { ScalarLike } from "../scalars/ScalarLike";
+import { isScalar, none } from "../scalars/utils";
+import { ConstantVariable } from "../variables/ConstantVariable";
+import { RefVariable } from "../variables/RefVariable";
+import { VariableLike } from "../variables/VariableLike";
 
 export class Partition<T extends Cols> {
   reduced: Accessor<Dataframe<Cols>>;
@@ -122,7 +127,7 @@ export class Partition<T extends Cols> {
       if (noop) {
         const cols = recipe.mapfn(reduced.cols);
         for (const k of allKeys(cols)) {
-          if (isScalar(cols[k])) cols[k] = ConstantVariable.of(cols[k]);
+          if (isScalar(cols[k])) cols[k] = ConstantVariable.from(cols[k]);
         }
 
         const result = Dataframe.from(reduced.n, cols);

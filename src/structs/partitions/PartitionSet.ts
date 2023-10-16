@@ -1,9 +1,9 @@
 import { Accessor } from "solid-js";
-import { Dataframe } from "../structs/Dataframe";
-import { FactorLike } from "../structs/Factor";
-import { Cols, Lazy, MapFn, ReduceFn, Row, RowOf } from "../utils/types";
+import { Cols, Lazy, MapFn, ReduceFn, Row, RowOf } from "../../utils/types";
+import { Dataframe } from "../Dataframe";
+import { Recipe } from "../Recipe";
+import { FactorLike } from "../factors/FactorLike";
 import { Partition } from "./Partition";
-import { Recipe } from "./Recipe";
 
 export class PartitionSet<T extends Cols> {
   partitions: Partition<any>[];

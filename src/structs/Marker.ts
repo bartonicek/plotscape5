@@ -7,14 +7,15 @@ import {
 } from "solid-js";
 import { seq } from "../utils/funs";
 import { Dataframe } from "./Dataframe";
-import { Factor, FactorLike } from "./Factor";
 import {
   groupSymbol,
   layerSymbol,
   positionsSymbol,
   transientSymbol,
 } from "./Symbols";
-import { RefVariable } from "./Variable";
+import { Factor } from "./factors/Factor";
+import { FactorLike } from "./factors/FactorLike";
+import { RefVariable } from "./variables/RefVariable";
 
 export const TRANSIENT = 0;
 export const [GROUP1, GROUP2, GROUP3, GROUP4] = [7, 6, 5, 4];
@@ -96,14 +97,14 @@ export class Marker {
     });
   }
 
-  clearAll = () => {
+  clearAll() {
     const { n, positionsArray } = this;
     for (const positions of positionsArray) positions.clear();
     for (let i = 0; i < n; i++) positionsArray[GROUP1].add(i);
     this.setIndices(Array(n).fill(GROUP1));
-  };
+  }
 
-  clearTransient = () => {
+  clearTransient() {
     const { n, positionsArray, transientPositions } = this;
     const indices = [...untrack(this.indices)];
 
@@ -112,5 +113,5 @@ export class Marker {
     transientPositions.clear();
 
     this.setIndices(indices);
-  };
+  }
 }

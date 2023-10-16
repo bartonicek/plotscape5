@@ -1,9 +1,9 @@
-import { Expanse } from "../../structs/Expanse";
-import { num } from "../../structs/Scalar";
-import { sig } from "../../structs/Value";
+import { num } from "../../structs/scalars/utils";
+import { Expanse } from "../../structs/scales/Expanse";
+import { sig } from "../../structs/values/utils";
 import { PlotStore } from "./makePlotStore";
 
-const makeExpanses = (store: PlotStore) => {
+export const makeExpanses = (store: PlotStore) => {
   return {
     outerH: Expanse.default().setSignals(
       sig(store.innerLeft),
@@ -27,4 +27,3 @@ const makeExpanses = (store: PlotStore) => {
 };
 
 export type PlotExpanses = ReturnType<typeof makeExpanses>;
-export default makeExpanses;

@@ -1,7 +1,32 @@
-import { Scale, ScaleLinear, ScalePlaceholder } from "../../structs/Scale";
+import { ScaleLike } from "../../structs/scales/ScaleLike";
+import { ScaleLinear } from "../../structs/scales/ScaleLinear";
+import { ScalePlaceholder } from "../../structs/scales/ScalePlaceholder";
 import { PlotExpanses } from "./makeExpanses";
 
-const makeScales = (expanses: PlotExpanses) => {
+export type PlotScales = {
+  inner: {
+    pct: {
+      x: ScaleLike;
+      y: ScaleLike;
+    };
+    data: {
+      x: ScaleLike;
+      y: ScaleLike;
+    };
+  };
+  outer: {
+    data: {
+      x: ScaleLike;
+      y: ScaleLike;
+    };
+    pct: {
+      x: ScaleLike;
+      y: ScaleLike;
+    };
+  };
+};
+
+export const makeScales = (expanses: PlotExpanses): PlotScales => {
   const { outerH, outerV, innerH, innerV, normX, normY } = expanses;
 
   return {
@@ -24,6 +49,14 @@ const makeScales = (expanses: PlotExpanses) => {
       },
     },
     outer: {
+      pct: {
+        x: ScaleLinear.default()
+          .setDomain(outerH.lower, outerH.upper)
+          .setNorm(normX.lower, normX.upper),
+        y: ScaleLinear.default()
+          .setDomain(outerH.lower, outerH.upper)
+          .setNorm(normY.lower, normY.upper),
+      },
       data: {
         x: ScalePlaceholder.default()
           .setCodomain(outerH.lower, outerH.upper)
@@ -33,25 +66,5 @@ const makeScales = (expanses: PlotExpanses) => {
           .setNorm(normY.lower, normY.upper),
       },
     },
-  };
-};
-
-export default makeScales;
-export type PlotScales = {
-  inner: {
-    pct: {
-      x: Scale;
-      y: Scale;
-    };
-    data: {
-      x: Scale;
-      y: Scale;
-    };
-  };
-  outer: {
-    data: {
-      x: Scale;
-      y: Scale;
-    };
   };
 };

@@ -1,6 +1,6 @@
 import { Contexts } from "../dom/plot/Contexts";
 import { PlotScales } from "../dom/plot/makeScales";
-import { PartitionSet } from "./PartitionSet";
+import { PartitionSet } from "./partitions/PartitionSet";
 
 export class Adapter {
   constructor(

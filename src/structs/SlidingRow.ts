@@ -10,13 +10,16 @@ export class SlidingRow<T extends Cols> {
     this.row = data.row(this.indexfn);
   }
 
-  static from = <T extends Cols>(data: Dataframe<T>, index: number) => {
+  static from<T extends Cols>(data: Dataframe<T>, index: number) {
     return new SlidingRow(data, index);
-  };
+  }
 
-  values = () => this.row;
-  slide = () => {
+  values() {
+    return this.row;
+  }
+
+  slide() {
     this.index++;
     return this;
-  };
+  }
 }
