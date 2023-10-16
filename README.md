@@ -18,7 +18,7 @@ Next, change directory, install the required dependencies (i.e. `bun i`), and fi
 bun i @abartonicek/plotscape5
 ```
 
-Now you should be ready to create your first figure:
+Now you should be ready to create your first figure (using the `mpg` data set, courtesy of the [ggplot2 R package](https://ggplot2.tidyverse.org/reference/mpg.html)):
 
 ```ts
 import {
