@@ -6,13 +6,19 @@ Plotscape relies on Solid JS for reactivity and Vite for build process but uses 
 
 # Quick Start
 
-To install, run in terminal:
+First initialize a new project with your front-end framework of choice (here using Vite with Bun as runtime):
 
 ```
-npm i @abartonicek/plotscape5
+bun create vite my-plotscape-figure
 ```
 
-Assuming you have `mpg.json` dataset (from the (ggplot2 package)[https://ggplot2.tidyverse.org/reference/mpg.html]) in the root directory of your project:
+Next, change directory, install the required dependencies (i.e. `bun i`), and finally install `plotscape` itself:
+
+```
+bun i @abartonicek/plotscape5
+```
+
+Now you should be ready to create your first figure:
 
 ```ts
 import {
