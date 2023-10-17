@@ -8,7 +8,7 @@ export class View<T> implements ValueLike<T> {
     return new View(array, index);
   }
 
-  value = () => {
+  value() {
     return this.array[this.indexfn()];
-  };
+  }
 }

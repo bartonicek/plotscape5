@@ -8,7 +8,7 @@ export class Signal<T> implements ValueLike<T> {
     return new Signal(getter);
   }
 
-  value = () => {
+  value() {
     return this.getter();
-  };
+  }
 }

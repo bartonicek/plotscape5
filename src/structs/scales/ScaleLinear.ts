@@ -1,4 +1,4 @@
-import { ExpanseLinear } from "./ExpanseLinear";
+import { ExpanseLinear } from "../expanses/ExpanseLinear";
 import { ScaleLike } from "./ScaleLike";
 
 export class ScaleLinear implements ScaleLike {

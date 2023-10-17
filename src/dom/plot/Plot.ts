@@ -9,17 +9,16 @@ import {
   allEntries,
   asInt,
   call,
-  diff,
   inSequence,
   throttle,
 } from "../../utils/funs";
-import graphicParameters from "../graphicParameters";
 import { Scene } from "../scene/Scene";
 import { Contexts, contexts } from "./Contexts";
 import { makeCanvasContext } from "./makeCanvasContext";
 import { PlotExpanses, makeExpanses } from "./makeExpanses";
 import { PlotStore, makePlotStore } from "./makePlotStore";
 import { PlotScales, makeScales } from "./makeScales";
+import { reset, zoom } from "./plotKeyActions";
 
 export class Plot {
   container: HTMLDivElement;
@@ -71,53 +70,9 @@ export class Plot {
     this.pushDecoration(new AxisLabels(this, "x"));
     this.pushDecoration(new AxisLabels(this, "y"));
 
-    const { defaultNorm } = graphicParameters;
     this.keyActions = {
-      KeyR: () => {
-        this.store.setNormXLower(defaultNorm.x.lower);
-        this.store.setNormYLower(defaultNorm.y.lower);
-        this.store.setNormXUpper(defaultNorm.x.upper);
-        this.store.setNormYUpper(defaultNorm.y.upper);
-      },
-      KeyZ: () => {
-        const { store, contexts, expanses } = this;
-        const [clickX, clickY, mouseX, mouseY] = [
-          store.clickX(),
-          store.clickY(),
-          store.mouseX(),
-          store.mouseY(),
-        ];
-        const { innerH, innerV, normX, normY } = expanses;
-
-        if (Math.abs(mouseX - clickX) < 10 || Math.abs(mouseY - clickY) < 10) {
-          return;
-        }
-
-        const [xLower, xUpper] = [clickX, mouseX]
-          .sort(diff)
-          .map(innerH.normalize)
-          .map(normX.normalize);
-
-        const [yLower, yUpper] = [clickY, mouseY]
-          .sort(diff)
-          .map(innerV.normalize)
-          .map(normY.normalize);
-
-        // Need to invert: e.g. if xLower is 0.3,
-        // then norm.unnormalize(0.3) should be 0
-        const xRange = 1 / (xUpper - xLower);
-        const yRange = 1 / (yUpper - yLower);
-
-        batch(() => {
-          store.setNormXLower(-xLower * xRange);
-          store.setNormXUpper(-xLower * xRange + xRange);
-          store.setNormYLower(-yLower * yRange);
-          store.setNormYUpper(-yLower * yRange + yRange);
-        });
-
-        scene.marker.clearTransient();
-        drawClear(contexts.user);
-      },
+      KeyR: () => reset(this),
+      KeyZ: () => zoom(this),
     };
 
     scene.pushPlot(this);
@@ -176,7 +131,7 @@ export class Plot {
     } = this.store;
 
     for (const plot of this.scene.plots) plot.deactivate();
-    this.scene.marker.clearTransient();
+    // this.scene.marker.clearTransient();
     this.activate();
 
     const x = event.offsetX - marginLeft();

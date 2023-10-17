@@ -2,7 +2,7 @@ import { createEffect } from "solid-js";
 import html from "solid-js/html";
 import { num } from "../../structs/scalars/utils";
 import { ScaleLike } from "../../structs/scales/ScaleLike";
-import { ScalePlaceholder } from "../../structs/scales/ScalePlaceholder";
+import { ScaleLinear } from "../../structs/scales/ScaleLinear";
 import { ValueLike } from "../../structs/values/ValueLike";
 import { sig } from "../../structs/values/utils";
 import { unwrap } from "../../utils/funs";
@@ -24,12 +24,13 @@ export class ContextLayer {
   width: ValueLike<number>;
   height: ValueLike<number>;
 
-  scales: Record<string, Record<string, ScaleLike>>;
+  scales: Record<string, ScaleLike>;
 
   constructor(plot: Plot, options: LayerOptions) {
+    this.scalingFactor = options.scalingFactor ?? 3;
     this.canvas = html`<canvas />` as HTMLCanvasElement;
     this.context = this.canvas.getContext("2d")!;
-    this.scalingFactor = options.scalingFactor ?? 3;
+
     if (options.classes) {
       for (const cssClass of options.classes) {
         this.canvas.classList.add(`plotscape-${cssClass}`);
@@ -44,17 +45,11 @@ export class ContextLayer {
     this.width = options.inner ? sig(store.innerWidth) : sig(store.width);
     this.height = options.inner ? sig(store.innerHeight) : sig(store.height);
 
-    const [inOut] = options.inner ? "inner" : "outer";
-    const codomain = plot.expanses[options.inner ? "inner" : "outer"];
+    const expanses = plot.expanses[options.inner ? "inner" : "outer"];
 
     this.scales = {
-      data: {
-        x: ScalePlaceholder.default().setCodomain(
-          codomain.horizontal.lower,
-          codomain.horizontal.upper
-        ),
-        y: ScalePlaceholder.default(),
-      },
+      x: ScaleLinear.default().setCodomain(expanses.horizontal),
+      y: ScaleLinear.default().setCodomain(expanses.vertical),
     };
 
     createEffect(this.resize);

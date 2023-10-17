@@ -1,5 +1,5 @@
+import { ExpanseLinear } from "../../structs/expanses/ExpanseLinear";
 import { num } from "../../structs/scalars/utils";
-import { ExpanseLinear } from "../../structs/scales/ExpanseLinear";
 import { sig } from "../../structs/values/utils";
 import { PlotStore } from "./makePlotStore";
 

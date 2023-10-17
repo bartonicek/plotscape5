@@ -1,5 +1,5 @@
-import { ExpanseDiscrete } from "./ExpanseDiscrete";
-import { ExpanseLinear } from "./ExpanseLinear";
+import { ExpanseDiscrete } from "../expanses/ExpanseDiscrete";
+import { ExpanseLinear } from "../expanses/ExpanseLinear";
 import { ScaleLike } from "./ScaleLike";
 
 export class ScaleDiscrete implements ScaleLike {

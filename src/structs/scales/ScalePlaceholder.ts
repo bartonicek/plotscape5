@@ -1,5 +1,5 @@
-import { ExpanseDiscrete } from "./ExpanseDiscrete";
-import { ExpanseLinear } from "./ExpanseLinear";
+import { ExpanseDiscrete } from "../expanses/ExpanseDiscrete";
+import { ExpanseLinear } from "../expanses/ExpanseLinear";
 import { ScaleDiscrete } from "./ScaleDiscrete";
 import { ScaleLike } from "./ScaleLike";
 import { ScaleLinear } from "./ScaleLinear";

@@ -1,6 +1,6 @@
-import { ExpanseDiscrete } from "./ExpanseDiscrete";
-import { ExpanseLike } from "./ExpanseLike";
-import { ExpanseLinear } from "./ExpanseLinear";
+import { ExpanseDiscrete } from "../expanses/ExpanseDiscrete";
+import { ExpanseLike } from "../expanses/ExpanseLike";
+import { ExpanseLinear } from "../expanses/ExpanseLinear";
 
 export type ScaleLike = {
   pushforward(x: any): number;
