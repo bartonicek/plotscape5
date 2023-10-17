@@ -28,46 +28,39 @@ export class PartitionSet<T extends Cols> {
     return this;
   };
 
-  apply = (fn: any) => fn(this);
+  apply(fn: any) {
+    fn(this);
+    return this;
+  }
 
-  reduce = <U extends Row>(reducefn: ReduceFn<RowOf<T>, U>, init: Lazy<U>) => {
+  reduce<U extends Row>(reducefn: ReduceFn<RowOf<T>, U>, init: Lazy<U>) {
     for (const recipe of this.recipes) recipe.reduce(reducefn, init);
     return this;
-  };
+  }
 
-  mapAt = <U extends Row, V extends Row>(index: number, mapfn: MapFn<U, V>) => {
+  mapAt<U extends Row, V extends Row>(index: number, mapfn: MapFn<U, V>) {
     this.recipes[index].map(mapfn as any);
     return this;
-  };
+  }
 
-  map = <U extends Row, V extends Row>(mapfn: MapFn<U, V>) => {
+  map<U extends Row, V extends Row>(mapfn: MapFn<U, V>) {
     for (const recipe of this.recipes) recipe.map(mapfn as any);
     return this;
-  };
+  }
 
-  stackAt = <U extends Row>(
+  stackAt<U extends Row>(
     index: number,
     stackfn: ReduceFn<U, U>,
     init: Lazy<U>
-  ) => {
+  ) {
     this.recipes[index].stack(stackfn, init);
     return this;
-  };
+  }
 
-  stack = <U extends Row>(stackfn: ReduceFn<U, U>, init: Lazy<U>) => {
+  stack<U extends Row>(stackfn: ReduceFn<U, U>, init: Lazy<U>) {
     for (const recipe of this.recipes) recipe.stack(stackfn, init);
     return this;
-  };
-
-  relabelAt = (depth: number, relabelfn: MapFn<any, any>) => {
-    this.recipes[depth].relabel(relabelfn);
-    return this;
-  };
-
-  relabel = (relabelfn: MapFn<any, any>) => {
-    for (const recipe of this.recipes) recipe.relabel(relabelfn);
-    return this;
-  };
+  }
 
   partData = (index: number) => this.partitions[index].mappedStacked();
   update = () => {

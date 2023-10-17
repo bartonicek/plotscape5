@@ -1,10 +1,10 @@
 import {
-  alNumCompare,
   allEntries,
+  asInt,
+  compareAlNum,
   diff,
   minMax,
   seq,
-  toInt,
 } from "../../utils/funs";
 import { Cols, Lazy } from "../../utils/types";
 import { Dataframe } from "../Dataframe";
@@ -39,7 +39,7 @@ export class Factor {
   static from<T extends StrVariable>(strVariable: T, labels?: string[]) {
     const { array, meta } = strVariable;
 
-    if (!labels) labels = meta.values.sort(alNumCompare);
+    if (!labels) labels = meta.values.sort(compareAlNum);
 
     const uniqueIndices = new Set(seq(0, labels.length));
     const indices = [] as number[];
@@ -98,7 +98,7 @@ export class Factor {
     const indexMap = {} as Record<number, number>;
 
     for (const [k, v] of Object.entries(sortedDirtyIndices)) {
-      const kk = toInt(k);
+      const kk = asInt(k);
       uniqueIndices.add(kk);
       indexMap[v] = kk;
     }
@@ -169,7 +169,7 @@ export class Factor {
     const indexMap2 = {} as Record<number, number>;
 
     for (const [k, v] of Object.entries(sortedDirtyIndices)) {
-      const kk = toInt(k);
+      const kk = asInt(k);
       uniqueIndices.add(kk);
       indexMapCombined[v] = kk;
 

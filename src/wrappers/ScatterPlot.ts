@@ -5,6 +5,7 @@ import { Adapter } from "../structs/Adapter";
 import { Dataframe } from "../structs/Dataframe";
 import { Factor } from "../structs/factors/Factor";
 import { PartitionSet } from "../structs/partitions/PartitionSet";
+import { ExpanseLinear } from "../structs/scales/ExpanseLinear";
 import { sig } from "../structs/values/utils";
 import { NumVariable } from "../structs/variables/NumVariable";
 import { allValues } from "../utils/funs";
@@ -34,17 +35,20 @@ export class ScatterPlot<T extends Cols> {
 
     const factors = [whole, iso, marker];
     this.partitionSet = new PartitionSet(factors, data).apply(identity2D);
-    const p1 = () => this.partitionSet.partData(1);
+    const p1 = () =>
+      this.partitionSet.partData(1) as unknown as Dataframe<{
+        x: NumVariable;
+        y: NumVariable;
+      }>;
+
+    const xMin = sig(() => p1().cols.x.meta.min);
+    const xMax = sig(() => p1().cols.x.meta.max);
+    const yMin = sig(() => p1().cols.y.meta.min);
+    const yMax = sig(() => p1().cols.y.meta.max);
 
     for (const scale of allValues(plot.scales)) {
-      scale.data.x = scale.data.x.setDomain!(
-        sig(() => (p1().cols.x as NumVariable).meta.min),
-        sig(() => (p1().cols.x as NumVariable).meta.max)
-      );
-      scale.data.y = scale.data.y.setDomain!(
-        sig(() => (p1().cols.y as NumVariable).meta.min),
-        sig(() => (p1().cols.y as NumVariable).meta.max)
-      );
+      scale.data.x = scale.data.x.setLimits!(ExpanseLinear.of(xMin, xMax));
+      scale.data.y = scale.data.y.setLimits!(ExpanseLinear.of(yMin, yMax));
     }
 
     const adapter = new Adapter(plot.contexts, this.partitionSet, plot.scales);

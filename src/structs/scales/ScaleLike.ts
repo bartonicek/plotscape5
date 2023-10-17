@@ -1,4 +1,6 @@
-import { ValueLike } from "../values/ValueLike";
+import { ExpanseDiscrete } from "./ExpanseDiscrete";
+import { ExpanseLike } from "./ExpanseLike";
+import { ExpanseLinear } from "./ExpanseLinear";
 
 export type ScaleLike = {
   pushforward(x: any): number;
@@ -6,8 +8,9 @@ export type ScaleLike = {
   breaks(): any[];
   breakWidth(): number;
 
-  setDomain?(lower: any, upper: any): ScaleLike;
-  setNorm(lower: any, upper: any): ScaleLike;
-  setCodomain(lower: any, upper: any): ScaleLike;
-  setValues?(values: ValueLike<string[]>): ScaleLike;
+  setLimits?(domain: ExpanseLinear): ScaleLike;
+  setValues?(domain: ExpanseDiscrete): ScaleLike;
+  setDomain?(domain: ExpanseLike<any>): ScaleLike;
+  setNorm(norm: ExpanseLinear): ScaleLike;
+  setCodomain(codomain: ExpanseLinear): ScaleLike;
 };

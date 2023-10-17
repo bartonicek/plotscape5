@@ -1,33 +1,34 @@
-import { ValueLike } from "../values/ValueLike";
-import { Expanse } from "./Expanse";
+import { ExpanseDiscrete } from "./ExpanseDiscrete";
+import { ExpanseLinear } from "./ExpanseLinear";
 import { ScaleDiscrete } from "./ScaleDiscrete";
 import { ScaleLike } from "./ScaleLike";
 import { ScaleLinear } from "./ScaleLinear";
 
 export class ScalePlaceholder implements ScaleLike {
-  constructor(public norm: Expanse, public codomain: Expanse) {}
+  constructor(public norm: ExpanseLinear, public codomain: ExpanseLinear) {}
 
   static default() {
-    return new ScalePlaceholder(Expanse.default(), Expanse.default());
+    return new ScalePlaceholder(
+      ExpanseLinear.default(),
+      ExpanseLinear.default()
+    );
   }
 
-  setNorm(lower: ValueLike<number>, upper: ValueLike<number>) {
-    this.norm.lower = lower;
-    this.norm.upper = upper;
+  setNorm(norm: ExpanseLinear) {
+    this.norm = norm;
     return this;
   }
 
-  setCodomain(lower: ValueLike<number>, upper: ValueLike<number>) {
-    this.codomain.lower = lower;
-    this.codomain.upper = upper;
+  setCodomain(codomain: ExpanseLinear) {
+    this.codomain = codomain;
     return this;
   }
 
-  setDomain(lower: ValueLike<number>, upper: ValueLike<number>) {
-    return new ScaleLinear(new Expanse(lower, upper), this.norm, this.codomain);
+  setLimits(domain: ExpanseLinear) {
+    return new ScaleLinear(domain, this.norm, this.codomain);
   }
 
-  setValues(values: ValueLike<string[]>) {
+  setValues(values: ExpanseDiscrete) {
     return new ScaleDiscrete(values, this.norm, this.codomain);
   }
 

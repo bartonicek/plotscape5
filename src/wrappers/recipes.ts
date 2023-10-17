@@ -21,14 +21,14 @@ export const catCount1D = (partitionSet: PartitionSet<any>) =>
 export const binCount1D = (partitionSet: PartitionSet<any>) =>
   partitionSet
     .reduce(
-      ({ count }, _) => ({ count: count.inc() }),
-      () => ({ count: num(0) })
+      ({ summary1 }, _) => ({ summary1: summary1.inc() }),
+      () => ({ summary1: num(0) })
     )
-    .map(({ binMin, binMax, count }) => ({
+    .map(({ binMin, binMax, summary1 }) => ({
       x0: binMin,
       x1: binMax,
       y0: num(0),
-      y1: count,
+      y1: summary1,
     }))
     .stackAt(
       2,

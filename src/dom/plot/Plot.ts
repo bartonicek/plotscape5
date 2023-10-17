@@ -5,7 +5,14 @@ import { Decoration } from "../../decorations/Decoration";
 import { Representation } from "../../representations/Representation";
 import { TRANSIENT } from "../../structs/Marker";
 import { drawClear, drawRect } from "../../utils/drawfuns";
-import { allEntries, call, diff, throttle, toInt } from "../../utils/funs";
+import {
+  allEntries,
+  asInt,
+  call,
+  diff,
+  inSequence,
+  throttle,
+} from "../../utils/funs";
 import graphicParameters from "../graphicParameters";
 import { Scene } from "../scene/Scene";
 import { Contexts, contexts } from "./Contexts";
@@ -120,12 +127,9 @@ export class Plot {
     this.representations.push(representation);
     const keyActions = representation.keyActions;
     if (keyActions) {
-      for (const [k, v] of allEntries(keyActions)) {
-        const oldAction = this.keyActions[k];
-        this.keyActions[k] = () => {
-          oldAction?.();
-          v();
-        };
+      for (const [k, newCb] of allEntries(keyActions)) {
+        const oldCb = this.keyActions[k];
+        this.keyActions[k] = oldCb ? inSequence(oldCb, newCb) : newCb;
       }
     }
     createEffect(() => representation.draw());
@@ -151,11 +155,12 @@ export class Plot {
 
   onResize = () => {
     const { setWidth, setHeight } = this.store;
-    setWidth(toInt(getComputedStyle(this.container)["width"]));
-    setHeight(toInt(getComputedStyle(this.container)["height"]));
+    setWidth(asInt(getComputedStyle(this.container)["width"]));
+    setHeight(asInt(getComputedStyle(this.container)["height"]));
     this.scene.marker.clearTransient();
-    this.representations.forEach((rep) => rep.draw());
-    this.decorations.forEach((dec) => dec.draw());
+
+    for (const rep of this.representations) rep.draw();
+    for (const dec of this.decorations) dec.draw();
   };
 
   onMouseDown = (event: MouseEvent) => {
@@ -170,7 +175,7 @@ export class Plot {
       setMouseY,
     } = this.store;
 
-    this.scene.plots.forEach((plot) => plot.deactivate());
+    for (const plot of this.scene.plots) plot.deactivate();
     this.scene.marker.clearTransient();
     this.activate();
 
@@ -242,11 +247,9 @@ export class Plot {
       setMouseX(x), setMouseY(y);
     });
 
-    const { setSelected: setSelectedCases } = scene.store;
-
-    representations.forEach((rep) =>
-      setSelectedCases(rep.checkSelection([x0, y0, x1, y1]))
-    );
+    for (const rep of representations) {
+      scene.store.setSelected(rep.checkSelection([x0, y0, x1, y1]));
+    }
   };
 
   onKeyDown = (event: KeyboardEvent) => {

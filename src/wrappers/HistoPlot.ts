@@ -7,6 +7,7 @@ import { Dataframe } from "../structs/Dataframe";
 import { Factor } from "../structs/factors/Factor";
 import { PartitionSet } from "../structs/partitions/PartitionSet";
 import { num } from "../structs/scalars/utils";
+import { ExpanseLinear } from "../structs/scales/ExpanseLinear";
 import { sig } from "../structs/values/utils";
 import { NumVariable } from "../structs/variables/NumVariable";
 import { noop } from "../utils/funs";
@@ -46,18 +47,23 @@ export class HistoPlot<T extends Cols> {
     const marker = scene.marker.factor;
 
     const factors = [whole, bins, marker];
+
     this.partitionSet = new PartitionSet(factors, data).apply(binCount1D);
-    const p1 = () => this.partitionSet.partData(1);
+    const p1 = () =>
+      this.partitionSet.partData(1) as unknown as Dataframe<{
+        x0: NumVariable;
+        x1: NumVariable;
+        y0: NumVariable;
+        y1: NumVariable;
+      }>;
+
+    const xMin = sig(() => p1().cols.x0.meta.min);
+    const xMax = sig(() => p1().cols.x1.meta.max);
+    const yMax = sig(() => p1().cols.y1.meta.max);
 
     for (const scale of Object.values(plot.scales)) {
-      scale.data.x = scale.data.x.setDomain!(
-        sig(() => (p1().cols.x0 as NumVariable).meta.min),
-        sig(() => (p1().cols.x1 as NumVariable).meta.max)
-      );
-      scale.data.y = scale.data.y.setDomain!(
-        num(0),
-        sig(() => (p1().cols.y1 as NumVariable).meta.max)
-      );
+      scale.data.x = scale.data.x.setLimits!(ExpanseLinear.of(xMin, xMax));
+      scale.data.y = scale.data.y.setLimits!(ExpanseLinear.of(num(0), yMax));
     }
 
     this.plot.store.setNormYLower = noop;

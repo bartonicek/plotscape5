@@ -29,13 +29,24 @@ export function POJO() {
   return {};
 }
 
+export function inSequence(fn1: Function, fn2: Function) {
+  return function () {
+    fn1();
+    fn2();
+  };
+}
+
+export function unwrap(x: { value: () => any }) {
+  return x.value();
+}
+
 // Simple unary functions
 
-export function stringify(x: any) {
+export function asString(x: any) {
   return x.toString();
 }
 
-export function toInt(x: string) {
+export function asInt(x: string) {
   return parseInt(x, 10);
 }
 
@@ -49,7 +60,7 @@ export function sum(x: number, y: number) {
   return x + y;
 }
 
-export function alNumCompare(a: string, b: string) {
+export function compareAlNum(a: string, b: string) {
   return a.localeCompare(b, "en", { numeric: true });
 }
 

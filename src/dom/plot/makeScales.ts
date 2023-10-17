@@ -32,38 +32,22 @@ export const makeScales = (expanses: PlotExpanses): PlotScales => {
   return {
     inner: {
       pct: {
-        x: ScaleLinear.default()
-          .setDomain(innerH.lower, innerH.upper)
-          .setNorm(normX.lower, normX.upper),
-        y: ScaleLinear.default()
-          .setDomain(innerV.lower, innerV.upper)
-          .setNorm(normY.lower, normY.upper),
+        x: ScaleLinear.default().setDomain(innerH).setNorm(normX),
+        y: ScaleLinear.default().setDomain(innerV).setNorm(normY),
       },
       data: {
-        x: ScalePlaceholder.default()
-          .setCodomain(innerH.lower, innerH.upper)
-          .setNorm(normX.lower, normX.upper),
-        y: ScalePlaceholder.default()
-          .setCodomain(innerV.lower, innerV.upper)
-          .setNorm(normY.lower, normY.upper),
+        x: ScalePlaceholder.default().setCodomain(innerH).setNorm(normX),
+        y: ScalePlaceholder.default().setCodomain(innerV).setNorm(normY),
       },
     },
     outer: {
       pct: {
-        x: ScaleLinear.default()
-          .setDomain(outerH.lower, outerH.upper)
-          .setNorm(normX.lower, normX.upper),
-        y: ScaleLinear.default()
-          .setDomain(outerH.lower, outerH.upper)
-          .setNorm(normY.lower, normY.upper),
+        x: ScaleLinear.default().setDomain(outerH).setNorm(normX),
+        y: ScaleLinear.default().setDomain(outerH).setNorm(normY),
       },
       data: {
-        x: ScalePlaceholder.default()
-          .setCodomain(outerH.lower, outerH.upper)
-          .setNorm(normX.lower, normX.upper),
-        y: ScalePlaceholder.default()
-          .setCodomain(outerV.lower, outerV.upper)
-          .setNorm(normY.lower, normY.upper),
+        x: ScalePlaceholder.default().setCodomain(outerH).setNorm(normX),
+        y: ScalePlaceholder.default().setCodomain(outerV).setNorm(normY),
       },
     },
   };

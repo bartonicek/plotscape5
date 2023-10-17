@@ -1,25 +1,55 @@
 import { num } from "../../structs/scalars/utils";
-import { Expanse } from "../../structs/scales/Expanse";
+import { ExpanseLinear } from "../../structs/scales/ExpanseLinear";
 import { sig } from "../../structs/values/utils";
 import { PlotStore } from "./makePlotStore";
 
 export const makeExpanses = (store: PlotStore) => {
   return {
-    outerH: Expanse.default().setSignals(
+    inner: {
+      horizontal: ExpanseLinear.default().setLimits(
+        num(0),
+        sig(store.innerWidth)
+      ),
+      vertical: ExpanseLinear.default().setLimits(
+        num(0),
+        sig(store.innerHeight)
+      ),
+    },
+    outer: {
+      horizontal: ExpanseLinear.default().setLimits(
+        sig(store.innerLeft),
+        sig(store.innerRight)
+      ),
+      vertical: ExpanseLinear.default().setLimits(
+        sig(store.innerBottom),
+        sig(store.innerTop)
+      ),
+    },
+    norm: {
+      x: ExpanseLinear.default().setLimits(
+        sig(store.normXLower),
+        sig(store.normXUppper)
+      ),
+      y: ExpanseLinear.default().setLimits(
+        sig(store.normYLower),
+        sig(store.normYUpper)
+      ),
+    },
+    outerH: ExpanseLinear.default().setLimits(
       sig(store.innerLeft),
       sig(store.innerRight)
     ),
-    outerV: Expanse.default().setSignals(
+    outerV: ExpanseLinear.default().setLimits(
       sig(store.innerBottom),
       sig(store.innerTop)
     ),
-    innerH: Expanse.default().setSignals(num(0), sig(store.innerWidth)),
-    innerV: Expanse.default().setSignals(num(0), sig(store.innerHeight)),
-    normX: Expanse.default().setSignals(
+    innerH: ExpanseLinear.default().setLimits(num(0), sig(store.innerWidth)),
+    innerV: ExpanseLinear.default().setLimits(num(0), sig(store.innerHeight)),
+    normX: ExpanseLinear.default().setLimits(
       sig(store.normXLower),
       sig(store.normXUppper)
     ),
-    normY: Expanse.default().setSignals(
+    normY: ExpanseLinear.default().setLimits(
       sig(store.normYLower),
       sig(store.normYUpper)
     ),

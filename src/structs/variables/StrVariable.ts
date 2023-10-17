@@ -1,4 +1,4 @@
-import { alNumCompare, stringify } from "../../utils/funs";
+import { asString, compareAlNum } from "../../utils/funs";
 import { Lazy } from "../../utils/types";
 import { Factor } from "../factors/Factor";
 import { Str } from "../scalars/Str";
@@ -15,10 +15,10 @@ export class StrVariable implements VariableLike<string> {
   constructor(array: any[], options?: { name?: string; sort?: boolean }) {
     options = { ...defaultOptions, ...options };
 
-    this.array = array.map(stringify);
+    this.array = array.map(asString);
     this.name = options?.name;
     this.meta = { values: Array.from(new Set(this.array)) };
-    if (options.sort) this.meta.values.sort(alNumCompare);
+    if (options.sort) this.meta.values.sort(compareAlNum);
   }
 
   static from(array: any[], options?: { name?: string; sort?: boolean }) {
@@ -44,7 +44,7 @@ export class StrVariable implements VariableLike<string> {
 
     if (this.meta.values.indexOf(value) === -1) {
       this.meta.values.push(value);
-      this.meta.values.sort(alNumCompare);
+      this.meta.values.sort(compareAlNum);
     }
 
     return this.array.length;

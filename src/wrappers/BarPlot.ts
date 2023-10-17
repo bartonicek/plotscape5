@@ -8,6 +8,8 @@ import { Factor } from "../structs/factors/Factor";
 import { FactorLike } from "../structs/factors/FactorLike";
 import { PartitionSet } from "../structs/partitions/PartitionSet";
 import { num } from "../structs/scalars/utils";
+import { ExpanseDiscrete } from "../structs/scales/ExpanseDiscrete";
+import { ExpanseLinear } from "../structs/scales/ExpanseLinear";
 import { sig } from "../structs/values/utils";
 import { NumVariable } from "../structs/variables/NumVariable";
 import { StrVariable } from "../structs/variables/StrVariable";
@@ -41,16 +43,19 @@ export class BarPlot<T extends Cols> {
     this.factors = [whole, factor, marker];
     this.partitionSet = new PartitionSet(this.factors, data).apply(catCount1D);
 
-    const p1 = () => this.partitionSet.partData(1);
+    const p1 = () =>
+      this.partitionSet.partData(1) as unknown as Dataframe<{
+        x: StrVariable;
+        y0: NumVariable;
+        y1: NumVariable;
+      }>;
+
+    const xVals = sig(() => p1().cols.x.values());
+    const yMax = sig(() => p1().cols.y1.meta.max);
 
     for (const scale of allValues(plot.scales)) {
-      scale.data.x = scale.data.x.setValues!(
-        sig(() => (p1().cols.x as StrVariable).values())
-      );
-      scale.data.y = scale.data.y.setDomain!(
-        num(0),
-        sig(() => (p1().cols.y1 as NumVariable).meta.max)
-      );
+      scale.data.x = scale.data.x.setValues!(ExpanseDiscrete.of(xVals));
+      scale.data.y = scale.data.y.setLimits!(ExpanseLinear.of(num(0), yMax));
     }
 
     this.plot.store.setNormYLower = noop;
@@ -59,16 +64,16 @@ export class BarPlot<T extends Cols> {
     const labs = () => data.cols.var1.meta.values;
     const orderedLabels = () => orderBy(labs(), counts());
 
-    let orderSwitch = true;
+    let isOrdered = false;
 
     Object.assign(this.plot.keyActions, {
       KeyO: () => {
-        if (orderSwitch) {
+        if (!isOrdered) {
           setLabels(orderedLabels());
-          orderSwitch = false;
+          isOrdered = true;
         } else {
           setLabels(labs());
-          orderSwitch = true;
+          isOrdered = false;
         }
       },
     });

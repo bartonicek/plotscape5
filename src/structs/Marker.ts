@@ -66,36 +66,38 @@ export class Marker {
 
     this.factor = () => Factor.computed(uniqueIndices, indices(), this.data);
 
-    createEffect(() => {
-      const { positionsArray, transientPositions } = this;
-      const [selected, group] = [this.selectedS(), untrack(this.groupS)];
-      const indices = [...untrack(this.indices)];
-
-      if (!selected.size) return;
-
-      for (const positions of positionsArray) {
-        for (const i of selected) positions.delete(i);
-      }
-
-      if (group === TRANSIENT) {
-        transientPositions.clear();
-
-        for (const i of selected) {
-          const index = addTransient(indices[i]);
-          indices[i] = index;
-          positionsArray[index].add(i);
-          transientPositions.add(i);
-        }
-      } else {
-        for (const i of selected) {
-          indices[i] = group;
-          positionsArray[group].add(i);
-        }
-      }
-
-      this.setIndices(indices);
-    });
+    createEffect(this.update);
   }
+
+  update = () => {
+    const { positionsArray, transientPositions } = this;
+    const [selected, group] = [this.selectedS(), untrack(this.groupS)];
+    const indices = [...untrack(this.indices)];
+
+    if (!selected.size) return;
+
+    for (const positions of positionsArray) {
+      for (const i of selected) positions.delete(i);
+    }
+
+    if (group === TRANSIENT) {
+      transientPositions.clear();
+
+      for (const i of selected) {
+        const index = addTransient(indices[i]);
+        indices[i] = index;
+        positionsArray[index].add(i);
+        transientPositions.add(i);
+      }
+    } else {
+      for (const i of selected) {
+        indices[i] = group;
+        positionsArray[group].add(i);
+      }
+    }
+
+    this.setIndices(indices);
+  };
 
   clearAll() {
     const { n, positionsArray } = this;

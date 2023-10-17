@@ -7,7 +7,7 @@ export class Value<T> implements ValueLike<T> {
     return new Value(val);
   }
 
-  value() {
+  value = () => {
     return this.val;
-  }
+  };
 }

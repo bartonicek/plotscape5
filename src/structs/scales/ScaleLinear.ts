@@ -1,19 +1,18 @@
-import { ValueLike } from "../values/ValueLike";
-import { Expanse } from "./Expanse";
+import { ExpanseLinear } from "./ExpanseLinear";
 import { ScaleLike } from "./ScaleLike";
 
 export class ScaleLinear implements ScaleLike {
   constructor(
-    public domain: Expanse,
-    public norm: Expanse,
-    public codomain: Expanse
+    public domain: ExpanseLinear,
+    public norm: ExpanseLinear,
+    public codomain: ExpanseLinear
   ) {}
 
   static default() {
     return new ScaleLinear(
-      Expanse.default(),
-      Expanse.default(),
-      Expanse.default()
+      ExpanseLinear.default(),
+      ExpanseLinear.default(),
+      ExpanseLinear.default()
     );
   }
 
@@ -27,21 +26,18 @@ export class ScaleLinear implements ScaleLike {
     return domain.unnormalize(norm.normalize(codomain.normalize(x)));
   }
 
-  setDomain(lower: ValueLike<number>, upper: ValueLike<number>) {
-    this.domain.lower = lower;
-    this.domain.upper = upper;
+  setDomain(expanse: ExpanseLinear) {
+    this.domain = expanse;
     return this;
   }
 
-  setNorm(lower: ValueLike<number>, upper: ValueLike<number>) {
-    this.norm.lower = lower;
-    this.norm.upper = upper;
+  setNorm(expanse: ExpanseLinear) {
+    this.norm = expanse;
     return this;
   }
 
-  setCodomain(lower: ValueLike<number>, upper: ValueLike<number>) {
-    this.codomain.lower = lower;
-    this.codomain.upper = upper;
+  setCodomain(expanse: ExpanseLinear) {
+    this.codomain = expanse;
     return this;
   }
 

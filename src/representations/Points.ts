@@ -70,14 +70,16 @@ export default class Points implements Representation {
     const selY = [coords[1], coords[3]] as [number, number];
     const selected = new Set<number>();
 
+    const m = Math.sqrt(2);
+
     let i = 0;
 
     for (const row of data) {
       const x = scaleX(row.x.value());
       const y = scaleY(row.y.value());
 
-      const x0x1 = [x - radius, x + radius] as [number, number];
-      const y0y1 = [y - radius, y + radius] as [number, number];
+      const x0x1 = [x - m * radius, x + m * radius] as [number, number];
+      const y0y1 = [y - m * radius, y + m * radius] as [number, number];
 
       if (rectOverlap(x0x1, y0y1, selX, selY)) {
         for (const i of row[positionsSymbol].value()) selected.add(i);

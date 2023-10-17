@@ -7,6 +7,9 @@ import { RefVariable } from "../structs/variables/RefVariable";
 import { StrVariable } from "../structs/variables/StrVariable";
 import { VariableLike } from "../structs/variables/VariableLike";
 
+export type Callback = (...args: any) => any;
+export type SideEffect = (...args: any) => void;
+
 export type MapFn<T, U> = (next: T) => U;
 export type ReduceFn<T, U> = (prev: U, next: T) => U;
 

@@ -1,56 +1,49 @@
-import { ref } from "../scalars/utils";
-import { ValueLike } from "../values/ValueLike";
-import { Expanse } from "./Expanse";
+import { ExpanseDiscrete } from "./ExpanseDiscrete";
+import { ExpanseLinear } from "./ExpanseLinear";
 import { ScaleLike } from "./ScaleLike";
 
 export class ScaleDiscrete implements ScaleLike {
   constructor(
-    public values: ValueLike<string[]>,
-    public norm: Expanse,
-    public codomain: Expanse
+    public domain: ExpanseDiscrete,
+    public norm: ExpanseLinear,
+    public codomain: ExpanseLinear
   ) {}
 
   static default() {
-    return new ScaleDiscrete(ref([]), Expanse.default(), Expanse.default());
+    return new ScaleDiscrete(
+      ExpanseDiscrete.default(),
+      ExpanseLinear.default(),
+      ExpanseLinear.default()
+    );
   }
 
   pushforward(x: string) {
-    const { values, norm, codomain } = this;
-
-    const vals = values.value();
-    const pct = (vals.indexOf(x) + 1) / (vals.length + 1);
-
-    return codomain.unnormalize(norm.unnormalize(pct));
+    const { domain, norm, codomain } = this;
+    return codomain.unnormalize(norm.unnormalize(domain.normalize(x)));
   }
 
   pullback(x: number) {
-    const { values, norm, codomain } = this;
-
-    const vals = values.value();
-    const pct = norm.normalize(codomain.normalize(x));
-
-    return vals[Math.round(pct * (vals.length + 1)) - 1];
+    const { domain, norm, codomain } = this;
+    return domain.unnormalize(norm.normalize(codomain.normalize(x)));
   }
 
-  setValues(values: ValueLike<string[]>) {
-    this.values = values;
+  setDomain(domain: ExpanseDiscrete) {
+    this.domain = domain;
     return this;
   }
 
-  setNorm = (lower: ValueLike<number>, upper: ValueLike<number>) => {
-    this.norm.lower = lower;
-    this.norm.upper = upper;
+  setNorm = (norm: ExpanseLinear) => {
+    this.norm = norm;
     return this;
   };
 
-  setCodomain(lower: ValueLike<number>, upper: ValueLike<number>) {
-    this.codomain.lower = lower;
-    this.codomain.upper = upper;
+  setCodomain(codomain: ExpanseLinear) {
+    this.codomain = codomain;
     return this;
   }
 
   breaks() {
-    return this.values.value();
+    return this.domain.values.value();
   }
 
   breakWidth() {
