@@ -12,9 +12,16 @@ import { sig } from "../structs/values/utils";
 import { NumVariable } from "../structs/variables/NumVariable";
 import { noop } from "../utils/funs";
 import { Cols, KeysOfType } from "../utils/types";
-import { binCount1D, binCount1DScaled } from "./recipes";
+import { binCount1DScaled } from "./recipes";
 
-export class HistoPlot<T extends Cols> {
+type SpineData = Dataframe<{
+  x0: NumVariable;
+  x1: NumVariable;
+  y0: NumVariable;
+  y1: NumVariable;
+}>;
+
+export class SpinePlot<T extends Cols> {
   plot: Plot;
   data: Dataframe<{ var1: NumVariable }>;
   partitionSet: PartitionSet<any>;
@@ -37,10 +44,10 @@ export class HistoPlot<T extends Cols> {
     const [width, setWidth] = createSignal(range / 20);
     const [anchor, setAnchor] = createSignal(min);
 
-    keyActions.Equal = () => setWidth((w) => (w * 10) / 9);
-    keyActions.Minus = () => setWidth((w) => (w * 9) / 10);
-    keyActions.BracketRight = () => setAnchor((a) => a + 1);
-    keyActions.BracketLeft = () => setAnchor((a) => a - 1);
+    keyActions["Equal"] = () => setWidth((w) => (w * 10) / 9);
+    keyActions["Minus"] = () => setWidth((w) => (w * 9) / 10);
+    keyActions["BracketRight"] = () => setAnchor((a) => a + 1);
+    keyActions["BracketLeft"] = () => setAnchor((a) => a - 1);
 
     const whole = () => Factor.mono(data.n);
     const bins = () => data.cols.var1.bin(sig(width), sig(anchor));
@@ -48,34 +55,18 @@ export class HistoPlot<T extends Cols> {
 
     const factors = [whole, bins, marker];
 
-    this.partitionSet = new PartitionSet(factors, data).apply(binCount1D);
-    const p1 = () =>
-      this.partitionSet.partData(1) as unknown as Dataframe<{
-        x0: NumVariable;
-        x1: NumVariable;
-        y0: NumVariable;
-        y1: NumVariable;
-      }>;
+    this.partitionSet = new PartitionSet(factors, data).apply(binCount1DScaled);
+    const p0 = () => this.partitionSet.partData(0) as unknown as SpineData;
+    const p1 = () => this.partitionSet.partData(1) as unknown as SpineData;
 
     const xMin = sig(() => p1().cols.x0.meta.min);
-    const xMax = sig(() => p1().cols.x1.meta.max);
+    const xMax = sig(() => p0().cols.x1.meta.max);
     const yMax = sig(() => p1().cols.y1.meta.max);
 
     for (const scale of Object.values(plot.scales)) {
       scale.data.x = scale.data.x.setLimits!(ExpanseLinear.of(xMin, xMax));
-      scale.data.y = scale.data.y.setLimits!(ExpanseLinear.of(num(0), yMax));
+      scale.data.y = scale.data.y.setLimits!(ExpanseLinear.of(num(0), num(1)));
     }
-
-    let spineSwitch = false;
-    keyActions.KeyS = () => {
-      if (!spineSwitch) {
-        this.partitionSet.apply(binCount1DScaled);
-        spineSwitch = true;
-      } else {
-        this.partitionSet.apply(binCount1D);
-        spineSwitch = false;
-      }
-    };
 
     this.plot.store.setNormYLower = noop;
 

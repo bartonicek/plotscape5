@@ -62,18 +62,23 @@ export class PartitionSet<T extends Cols> {
     return this;
   }
 
-  partData = (index: number) => this.partitions[index].mappedStacked();
+  partData = (index: number) => this.partitions[index].mappedAndStacked();
   update = () => {
     const { factors, data, recipes } = this;
-    let partition = new Partition(factors[0], data, recipes[0]);
-    this.partitions.push(partition);
 
-    for (let i = 1; i < this.factors.length; i++) {
-      partition = partition.nest(factors[i], recipes[i]);
+    if (!this.partitions.length) {
+      let partition = new Partition(factors[0], data, recipes[0]);
       this.partitions.push(partition);
+
+      for (let i = 1; i < this.factors.length; i++) {
+        partition = partition.nest(factors[i], recipes[i]);
+        this.partitions.push(partition);
+      }
     }
 
-    for (const partition of this.partitions) partition.update();
+    for (const partition of this.partitions) {
+      partition.update();
+    }
 
     return this;
   };

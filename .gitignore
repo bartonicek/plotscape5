@@ -24,4 +24,5 @@ dist-ssr
 *.sw?
 
 testData
-viztest.ts
+src/devtest.ts
+libtest.ts

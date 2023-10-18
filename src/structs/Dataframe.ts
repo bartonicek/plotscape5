@@ -15,17 +15,12 @@ import { RefVariable } from "./variables/RefVariable";
 import { StrVariable } from "./variables/StrVariable";
 import { VariableLike } from "./variables/VariableLike";
 
-const colConstructorMap = {
-  numeric: NumVariable,
-  discrete: StrVariable,
-  reference: RefVariable,
-};
-
-type ColConstructorMap = typeof colConstructorMap;
-type ColType = keyof ColConstructorMap;
 type ColTypeMap = {
-  [key in ColType]: InstanceType<ColConstructorMap[key]>;
+  numeric: NumVariable;
+  discrete: StrVariable;
+  reference: RefVariable;
 };
+type ColType = keyof ColTypeMap;
 
 export type ColScheme<K extends string> = Record<K, ColType>;
 
@@ -60,6 +55,11 @@ export class Dataframe<T extends Cols> {
     V extends ColScheme<string>
   >(unparsed: U, spec: V) {
     const cols = {} as { [key in keyof V]: ColTypeMap[V[key]] };
+    const colConstructorMap = {
+      numeric: NumVariable,
+      discrete: StrVariable,
+      reference: RefVariable,
+    };
 
     for (const [k, v] of allEntries(spec)) {
       cols[k] = new colConstructorMap[v](unparsed[k as keyof U], {

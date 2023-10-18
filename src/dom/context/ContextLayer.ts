@@ -9,7 +9,7 @@ import { unwrap } from "../../utils/funs";
 import { Plot } from "../plot/Plot";
 
 type LayerOptions = {
-  inner: boolean;
+  inner?: boolean;
   scalingFactor?: number;
   classes?: string[];
 };
@@ -40,6 +40,7 @@ export class ContextLayer {
     plot.container.appendChild(this.canvas);
 
     const { store } = plot;
+
     this.left = options.inner ? sig(store.marginLeft) : num(0);
     this.top = options.inner ? sig(store.marginTop) : num(0);
     this.width = options.inner ? sig(store.innerWidth) : sig(store.width);

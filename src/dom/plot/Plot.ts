@@ -21,6 +21,7 @@ import { PlotScales, makeScales } from "./makeScales";
 import { reset, zoom } from "./plotKeyActions";
 
 export class Plot {
+  id: Symbol;
   container: HTMLDivElement;
 
   store: PlotStore;
@@ -34,6 +35,7 @@ export class Plot {
   keyActions: Record<string, () => void>;
 
   constructor(public scene: Scene<any>) {
+    this.id = Symbol();
     const container = html`<div
       class="plotscape-container"
     ></div>` as HTMLDivElement;
@@ -130,8 +132,11 @@ export class Plot {
       setMouseY,
     } = this.store;
 
-    for (const plot of this.scene.plots) plot.deactivate();
-    // this.scene.marker.clearTransient();
+    for (const plot of this.scene.plots) {
+      if (plot.id != this.id) plot.deactivate();
+    }
+
+    if (this.store.active()) this.scene.marker.clearTransient();
     this.activate();
 
     const x = event.offsetX - marginLeft();

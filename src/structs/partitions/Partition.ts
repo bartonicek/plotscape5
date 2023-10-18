@@ -1,4 +1,4 @@
-import { Accessor, createMemo, untrack } from "solid-js";
+import { Accessor, Setter, createMemo, createSignal, untrack } from "solid-js";
 import { allEntries, allKeys, lazy } from "../../utils/funs";
 import { Cols, Key, Row, RowOf } from "../../utils/types";
 import { Dataframe } from "../Dataframe";
@@ -15,8 +15,10 @@ import { RefVariable } from "../variables/RefVariable";
 import { VariableLike } from "../variables/VariableLike";
 
 export class Partition<T extends Cols> {
+  trigger: Accessor<undefined>;
+  setTrigger: Setter<undefined>;
   reduced: Accessor<Dataframe<Cols>>;
-  mappedStacked: Accessor<Dataframe<Cols>>;
+  mappedAndStacked: Accessor<Dataframe<Cols>>;
 
   constructor(
     public factor: Accessor<FactorLike<any>>,
@@ -24,14 +26,16 @@ export class Partition<T extends Cols> {
     public recipe: Recipe<RowOf<T>, any, any>,
     public parent?: Partition<T>
   ) {
+    // Signal to trigger manual recomputation
+    const [trigger, setTrigger] = createSignal(undefined, { equals: false });
+    this.trigger = trigger;
+    this.setTrigger = setTrigger;
+
     this.reduced = createMemo(() => this.reduce());
-    this.mappedStacked = createMemo(() => this.mapAndStack());
+    this.mappedAndStacked = createMemo(() => this.mapAndStack());
   }
 
-  update = () => {
-    this.reduced = createMemo(() => this.reduce());
-    this.mappedStacked = createMemo(() => this.mapAndStack());
-  };
+  update = () => this.setTrigger(undefined);
 
   nest = (
     childFactor: Accessor<FactorLike<any>>,
@@ -46,6 +50,8 @@ export class Partition<T extends Cols> {
   };
 
   reduce = (): Dataframe<Cols> => {
+    this.trigger();
+
     const { data, parent, recipe } = this;
 
     // If we do not reduce, just combine data and factor data
@@ -140,10 +146,12 @@ export class Partition<T extends Cols> {
     }
     //
 
-    const row1 = recipe.mapfn(slider.values());
+    const row1 = slider.values();
+    row1.parent = parentRows![row1[parentSymbol].value()] as any;
+    const mappedRow1 = recipe.mapfn(row1);
 
     const cols = {} as Record<Key, VariableLike<any>>;
-    for (const k of allKeys(row1)) cols[k] = row1[k].toVariable();
+    for (const k of allKeys(mappedRow1)) cols[k] = mappedRow1[k].toVariable();
 
     const result = Dataframe.from(1, cols).empty();
 
@@ -158,7 +166,7 @@ export class Partition<T extends Cols> {
 
       const parentIndex = row[parentSymbol].value() as number;
       const parentRow = parentRows[parentIndex];
-      row["parent"] = parentRow as any;
+      row.parent = parentRow as any;
 
       const mappedRow = recipe.mapfn(row);
 
