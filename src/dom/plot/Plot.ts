@@ -49,7 +49,7 @@ export class Plot {
 
     container.addEventListener("contextmenu", this.onContextMenu);
     container.addEventListener("mouseup", this.onMouseUp);
-    container.addEventListener("mousemove", throttle(this.onMouseMove, 30));
+    container.addEventListener("mousemove", throttle(this.onMouseMove, 20));
     window.addEventListener("keydown", throttle(this.onKeyDown, 50));
 
     const store = makePlotStore();
