@@ -36,6 +36,7 @@ export class TranslatedVariable<T> implements VariableLike<T> {
   push(scalar: ScalarLike<T>) {
     return this.variable.push(scalar);
   }
+
   isOfLength(n: number) {
     return this.variable.isOfLength(n);
   }

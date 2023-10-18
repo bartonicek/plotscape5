@@ -27,8 +27,8 @@ export function binCount1D(partitionSet: PartitionSet<any>) {
       ({ summary1 }, _) => ({ summary1: summary1.inc() }),
       () => ({ summary1: num(0) })
     )
-    .map(({ binMin, binMax, summary1 }) => {
-      return { x0: binMin, x1: binMax, y0: num(0), y1: summary1 };
+    .map(({ bin0, bin1, summary1 }) => {
+      return { x0: bin0, x1: bin1, y0: num(0), y1: summary1 };
     })
     .stackAt(1, secondArgument, POJO)
     .stackAt(
@@ -42,7 +42,7 @@ export function binCount1D(partitionSet: PartitionSet<any>) {
 export function binCount1DScaled(partitionSet: PartitionSet<any>) {
   return partitionSet
     .reduce(
-      ({ summary1 }, _) => ({ summary1: summary1.inc() }),
+      ({ summary1: stat1 }, _) => ({ summary1: stat1.inc() }),
       () => ({ summary1: num(0) })
     )
     .mapAt(0, ({ summary1 }) => ({ x1: summary1 }))

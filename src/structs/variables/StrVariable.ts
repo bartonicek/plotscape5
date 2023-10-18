@@ -14,7 +14,6 @@ export class StrVariable implements VariableLike<string> {
 
   constructor(array: any[], options?: { name?: string; sort?: boolean }) {
     options = { ...defaultOptions, ...options };
-
     this.array = array.map(asString);
     this.name = options?.name;
     this.meta = { values: Array.from(new Set(this.array)) };

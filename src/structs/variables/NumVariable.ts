@@ -16,8 +16,8 @@ export class NumVariable implements VariableLike<number> {
     this.meta = { min, max };
   }
 
-  static from(array: number[]) {
-    return new NumVariable(array);
+  static from(array: number[], options?: { name?: string }) {
+    return new NumVariable(array, options);
   }
 
   empty() {
@@ -47,6 +47,6 @@ export class NumVariable implements VariableLike<number> {
   }
 
   bin(width: ValueLike<number>, anchor: ValueLike<number>) {
-    return Factor.bin(this.array, width.value(), anchor.value());
+    return Factor.bin(this, width.value(), anchor.value());
   }
 }

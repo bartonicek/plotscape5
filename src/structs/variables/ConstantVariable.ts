@@ -4,25 +4,27 @@ import { VariableLike } from "./VariableLike";
 
 export class ConstantVariable implements VariableLike<any> {
   private variable: VariableLike<any>;
+  name: string | undefined;
   meta?: Record<string, any>;
 
-  constructor(scalarLike: ScalarLike<any>, private index = 0) {
+  constructor(scalarLike: ScalarLike<any>, options?: { name?: string }) {
+    this.name = options?.name;
     this.variable = scalarLike.toVariable();
     this.meta = this.variable.meta;
   }
 
-  static from(scalarLike: ScalarLike<any>) {
+  static from(scalarLike: ScalarLike<any>, options?: { name?: string }) {
     return new ConstantVariable(scalarLike);
   }
 
   empty() {}
 
   ith() {
-    return this.variable.ith(lazy(this.index));
+    return this.variable.ith(lazy(0));
   }
 
   values() {
-    return [this.variable.ith(lazy(0))];
+    return this.variable.values();
   }
 
   push() {

@@ -60,7 +60,8 @@ export class Factor {
     return new Computed(uniqueIndices, indices, data);
   }
 
-  static bin(array: number[], width?: number, anchor?: number) {
+  static bin(variable: NumVariable, width?: number, anchor?: number) {
+    const array = variable.values();
     const [min, max] = minMax(array);
 
     const nBins = width ? Math.ceil((max - min) / width) + 1 : 10;
@@ -115,8 +116,8 @@ export class Factor {
     }
 
     const cols = {
-      binMin: NumVariable.from(binMin),
-      binMax: NumVariable.from(binMax),
+      bin0: NumVariable.from(binMin, { name: variable.name }),
+      bin1: NumVariable.from(binMax, { name: variable.name }),
       [positionsSymbol]: RefVariable.from(Object.values(positions)),
     };
     const data = new Dataframe(uniqueIndices.size, cols);
