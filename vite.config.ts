@@ -7,7 +7,6 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, "lib/main.ts"),
-      formats: ["es"],
       name: "plotscape5",
     },
   },
@@ -15,12 +14,7 @@ export default defineConfig({
     libInjectCss(),
     dts({
       include: ["lib"],
-      insertTypesEntry: true,
-      // rollupTypes: true,
-      beforeWriteFile: (filePath, content) => ({
-        filePath: filePath.replace("lib", ""),
-        content,
-      }),
+      rollupTypes: true,
     }),
   ],
 });

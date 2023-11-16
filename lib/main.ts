@@ -1,9 +1,9 @@
-import "../src/style.css";
+import "./style.css";
 
 export { createRoot } from "solid-js";
-export { Scene } from "../src/dom/scene/Scene";
-export { Dataframe } from "../src/structs/Dataframe";
-export { loadData } from "../src/utils/funs";
-export { BarPlot } from "../src/wrappers/BarPlot";
-export { HistoPlot } from "../src/wrappers/HistoPlot";
-export { ScatterPlot } from "../src/wrappers/ScatterPlot";
+export { Scene } from "./dom/scene/Scene.ts";
+export { Dataframe } from "./structs/Dataframe";
+export { loadData } from "./utils/funs";
+export { BarPlot } from "./wrappers/BarPlot";
+export { HistoPlot } from "./wrappers/HistoPlot";
+export { ScatterPlot } from "./wrappers/ScatterPlot";

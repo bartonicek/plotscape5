@@ -14,7 +14,7 @@ export class ConstantVariable implements VariableLike<any> {
   }
 
   static from(scalarLike: ScalarLike<any>, options?: { name?: string }) {
-    return new ConstantVariable(scalarLike);
+    return new ConstantVariable(scalarLike, options);
   }
 
   empty() {}

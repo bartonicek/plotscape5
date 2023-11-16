@@ -55,9 +55,12 @@ export function binCount1DScaled(partitionSet: PartitionSet<any>) {
     }))
     .mapAt(2, ({ summary1, parent }) => {
       return {
+        //@ts-ignore
         x0: parent.x0,
+        //@ts-ignore
         x1: parent.x1,
         y0: num(0),
+        //@ts-ignore
         y1: summary1.divideBy(parent.summary1),
       };
     })

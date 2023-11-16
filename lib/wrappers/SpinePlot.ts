@@ -61,7 +61,6 @@ export class SpinePlot<T extends Cols> {
 
     const xMin = sig(() => p1().cols.x0.meta.min);
     const xMax = sig(() => p0().cols.x1.meta.max);
-    const yMax = sig(() => p1().cols.y1.meta.max);
 
     for (const scale of Object.values(plot.scales)) {
       scale.data.x = scale.data.x.setLimits!(ExpanseLinear.of(xMin, xMax));
