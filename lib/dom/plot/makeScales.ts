@@ -12,12 +12,14 @@ export type PlotScales = {
     data: {
       x: ScaleLike;
       y: ScaleLike;
+      size: ScaleLike;
     };
   };
   outer: {
     data: {
       x: ScaleLike;
       y: ScaleLike;
+      size: ScaleLike;
     };
     pct: {
       x: ScaleLike;
@@ -38,6 +40,7 @@ export const makeScales = (expanses: PlotExpanses): PlotScales => {
       data: {
         x: ScalePlaceholder.default().setCodomain(innerH).setNorm(normX),
         y: ScalePlaceholder.default().setCodomain(innerV).setNorm(normY),
+        size: ScalePlaceholder.default(),
       },
     },
     outer: {
@@ -48,6 +51,7 @@ export const makeScales = (expanses: PlotExpanses): PlotScales => {
       data: {
         x: ScalePlaceholder.default().setCodomain(outerH).setNorm(normX),
         y: ScalePlaceholder.default().setCodomain(outerV).setNorm(normY),
+        size: ScalePlaceholder.default(),
       },
     },
   };

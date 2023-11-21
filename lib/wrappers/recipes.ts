@@ -76,3 +76,18 @@ export function binCount1DScaled(partitionSet: PartitionSet<any>) {
     )
     .update();
 }
+
+export function catCount2D(partitionSet: PartitionSet<any>) {
+  return partitionSet
+    .reduce(
+      ({ count }, {}) => ({ count: count.inc() }),
+      () => ({ count: num(0) })
+    )
+    .map(({ label, label$, count }) => ({ x: label, y: label$, size: count }))
+    .stackAt(
+      2,
+      (parent, part) => ({ size: parent.size.add(part.size) }),
+      () => ({ size: num(0) })
+    )
+    .update();
+}

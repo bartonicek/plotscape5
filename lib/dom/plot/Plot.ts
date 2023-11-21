@@ -114,7 +114,7 @@ export class Plot {
     const { setWidth, setHeight } = this.store;
     setWidth(asInt(getComputedStyle(this.container)["width"]));
     setHeight(asInt(getComputedStyle(this.container)["height"]));
-    this.scene.marker.clearTransient();
+    // this.scene.marker.clearTransient();
 
     for (const rep of this.representations) rep.draw();
     for (const dec of this.decorations) dec.draw();
@@ -147,11 +147,11 @@ export class Plot {
       setClickX(x), setClickY(y), setMouseX(x), setMouseY(y);
     });
 
-    const { setSelected: setSelectedCases } = this.scene.store;
+    const { setSelected } = this.scene.store;
 
     if (event.button === 0) {
       this.representations.forEach((rep) =>
-        setSelectedCases(rep.checkSelection([x, y, x, y]))
+        setSelected(rep.checkSelection([x, y, x, y]))
       );
     }
   };

@@ -193,11 +193,15 @@ export class Factor {
     const translatefn1 = (indexfn: Lazy<number>) => () => indexMap1[indexfn()];
     const translatefn2 = (indexfn: Lazy<number>) => () => indexMap2[indexfn()];
 
+    const seenKeys = new Set<string>();
+
     for (const [k, v] of allEntries(data1.cols)) {
+      if (typeof k === "string") seenKeys.add(k);
       cols[k] = new TranslatedVariable(v, translatefn1);
     }
 
-    for (const [k, v] of allEntries(data2.cols)) {
+    for (let [k, v] of allEntries(data2.cols)) {
+      if (typeof k === "string") while (seenKeys.has(k)) k += "$";
       cols[k] = new TranslatedVariable(v, translatefn2);
     }
 

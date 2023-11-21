@@ -4,6 +4,7 @@ import { Dataframe } from "../lib/structs/Dataframe.ts";
 import "../lib/style.css";
 import { loadData } from "../lib/utils/funs.ts";
 import { BarPlot } from "../lib/wrappers/BarPlot.ts";
+import { FluctuationPlot } from "../lib/wrappers/FluctuationPlot.ts";
 import { HistoPlot } from "../lib/wrappers/HistoPlot.ts";
 import { ScatterPlot } from "../lib/wrappers/ScatterPlot.ts";
 
@@ -31,6 +32,11 @@ async function mpgTest() {
     const plot4 = new ScatterPlot(scene, (d) => ({
       var1: d.displ,
       var2: d.hwy,
+    }));
+
+    const plot5 = new FluctuationPlot(scene, (d) => ({
+      var1: d.cyl,
+      var2: d.year,
     }));
   });
 }
