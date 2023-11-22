@@ -1,3 +1,4 @@
+import { capitalize } from "@abartonicek/utilities";
 import { Accessor } from "solid-js";
 import { Plot } from "../dom/plot/Plot";
 import { Dataframe, Scene } from "../main";
@@ -30,6 +31,9 @@ export class FluctuationPlot<T extends Cols> {
   ) {
     this.plot = new Plot(scene);
     this.data = scene.data.select(mappingfn);
+
+    this.plot.xTitle = capitalize(this.data.cols.var1.name ?? "") ?? `x`;
+    this.plot.yTitle = capitalize(this.data.cols.var2.name ?? "") ?? `y`;
 
     const { data, plot } = this;
 

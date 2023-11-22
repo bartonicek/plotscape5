@@ -34,8 +34,8 @@ export const makeScales = (expanses: PlotExpanses): PlotScales => {
   return {
     inner: {
       pct: {
-        x: ScaleLinear.default().setDomain(innerH).setNorm(normX),
-        y: ScaleLinear.default().setDomain(innerV).setNorm(normY),
+        x: ScaleLinear.default().setCodomain(innerH),
+        y: ScaleLinear.default().setCodomain(innerV),
       },
       data: {
         x: ScalePlaceholder.default().setCodomain(innerH).setNorm(normX),
@@ -45,8 +45,8 @@ export const makeScales = (expanses: PlotExpanses): PlotScales => {
     },
     outer: {
       pct: {
-        x: ScaleLinear.default().setDomain(outerH).setNorm(normX),
-        y: ScaleLinear.default().setDomain(outerH).setNorm(normY),
+        x: ScaleLinear.default().setCodomain(outerH),
+        y: ScaleLinear.default().setCodomain(outerV),
       },
       data: {
         x: ScalePlaceholder.default().setCodomain(outerH).setNorm(normX),

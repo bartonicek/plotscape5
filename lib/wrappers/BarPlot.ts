@@ -1,3 +1,4 @@
+import { capitalize } from "@abartonicek/utilities";
 import { Accessor, createSignal } from "solid-js";
 import { Plot } from "../dom/plot/Plot";
 import { Scene } from "../dom/scene/Scene";
@@ -31,6 +32,9 @@ export class BarPlot<T extends Cols> {
   ) {
     this.plot = new Plot(scene);
     this.data = scene.data.select(mappingfn);
+
+    this.plot.xTitle = capitalize(this.data.cols.var1.name ?? "") ?? `x`;
+    this.plot.yTitle = `Count`;
 
     const { data, plot } = this;
 

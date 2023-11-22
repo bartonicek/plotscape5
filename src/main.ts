@@ -3,6 +3,7 @@ import { Scene } from "../lib/dom/scene/Scene.ts";
 import { Dataframe } from "../lib/structs/Dataframe.ts";
 import "../lib/style.css";
 import { loadData } from "../lib/utils/funs.ts";
+import { Dict } from "../lib/utils/types.ts";
 import { BarPlot } from "../lib/wrappers/BarPlot.ts";
 import { FluctuationPlot } from "../lib/wrappers/FluctuationPlot.ts";
 import { HistoPlot } from "../lib/wrappers/HistoPlot.ts";
@@ -26,7 +27,6 @@ async function mpgTest() {
 
   createRoot(() => {
     const scene = new Scene(app, dataMpg);
-    const plot1 = new BarPlot(scene, (d) => ({ var1: d.cyl }));
     const plot2 = new BarPlot(scene, (d) => ({ var1: d.manufacturer }));
     const plot3 = new HistoPlot(scene, (d) => ({ var1: d.hwy }));
     const plot4 = new ScatterPlot(scene, (d) => ({
@@ -35,21 +35,19 @@ async function mpgTest() {
     }));
 
     const plot5 = new FluctuationPlot(scene, (d) => ({
-      var1: d.cyl,
-      var2: d.year,
+      var1: d.year,
+      var2: d.cyl,
     }));
   });
 }
 
 async function diamondsTest() {
-  const diamondsJSON = (await loadData("./testData/diamonds.json")) as Record<
-    string,
-    any[]
-  >;
+  const diamondsJSON = (await loadData("./testData/diamonds.json")) as Dict;
   const [n, pct] = [Object.values(diamondsJSON)[0].length, 0.25];
   const nums = Array.from(Array(n), () => Math.random());
 
   for (const [k, v] of Object.entries(diamondsJSON)) {
+    // @ts-ignore
     diamondsJSON[k] = v.filter((_, i) => nums[i] > 1 - pct);
   }
 

@@ -1,3 +1,4 @@
+import { capitalize } from "@abartonicek/utilities";
 import { Plot } from "../dom/plot/Plot";
 import { Scene } from "../dom/scene/Scene";
 import Points from "../representations/Points";
@@ -27,6 +28,9 @@ export class ScatterPlot<T extends Cols> {
     this.plot = new Plot(scene);
     this.data = scene.data.select(mappingfn);
 
+    this.plot.xTitle = capitalize(this.data.cols.var1.name ?? "") ?? `x`;
+    this.plot.yTitle = capitalize(this.data.cols.var2.name ?? "") ?? `y`;
+
     const { data, plot } = this;
 
     const whole = () => Factor.mono(scene.data.n);
@@ -35,16 +39,12 @@ export class ScatterPlot<T extends Cols> {
 
     const factors = [whole, iso, marker];
     this.partitionSet = new PartitionSet(factors, data).apply(identity2D);
-    const p1 = () =>
-      this.partitionSet.partData(1) as unknown as Dataframe<{
-        x: NumVariable;
-        y: NumVariable;
-      }>;
+    const p1 = () => this.partitionSet.partData(1);
 
-    const xMin = sig(() => p1().cols.x.meta.min);
-    const xMax = sig(() => p1().cols.x.meta.max);
-    const yMin = sig(() => p1().cols.y.meta.min);
-    const yMax = sig(() => p1().cols.y.meta.max);
+    const xMin = sig(() => p1().cols.x.meta!.min);
+    const xMax = sig(() => p1().cols.x.meta!.max);
+    const yMin = sig(() => p1().cols.y.meta!.min);
+    const yMax = sig(() => p1().cols.y.meta!.max);
 
     for (const scale of allValues(plot.scales)) {
       scale.data.x = scale.data.x.setLimits!(ExpanseLinear.of(xMin, xMax));

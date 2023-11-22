@@ -6,7 +6,8 @@ const graphicParameters = {
   colour: "#4682B4",
   groupColours: [`#D1D5DE`, `#E41A1C`, `#4DAF4A`, `#984EA3`],
   transientColour: `#377EB8`,
-  fontsize: 16,
+  labelFontsize: 16,
+  titleFontsize: 20,
   marginLines: [4, 4, 2, 2] as const,
   defaultNorm: {
     x: { lower: 0.05, upper: 0.95 },

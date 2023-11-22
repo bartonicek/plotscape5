@@ -139,6 +139,17 @@ export function throttle(fun: Function, delay: number) {
   };
 }
 
+export function pointInRect(
+  point: [number, number],
+  rect: [number, number, number, number]
+) {
+  const [x, y] = point;
+  const [x0, y0, x1, y1] = rect;
+
+  if (!(x < x0 || x > x1 || y < y0 || y > y1)) return true;
+  return false;
+}
+
 export function rectOverlap(
   rect1x: [number, number],
   rect1y: [number, number],

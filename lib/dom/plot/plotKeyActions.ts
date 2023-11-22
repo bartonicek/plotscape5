@@ -1,6 +1,6 @@
 import { batch } from "solid-js";
 import { drawClear } from "../../utils/drawfuns";
-import { minMax } from "../../utils/funs";
+import { minMax, unwrapAll } from "../../utils/funs";
 import graphicParameters from "../graphicParameters";
 import { Plot } from "./Plot";
 
@@ -48,4 +48,28 @@ export function zoom(plot: Plot) {
 
   plot.scene.marker.clearTransient();
   drawClear(contexts.user);
+}
+
+export function query(plot: Plot) {
+  const { store, representations } = plot;
+  const [mouseX, mouseY, innerHeight, marginLeft] = [
+    store.mouseX(),
+    store.mouseY(),
+    store.innerHeight(),
+    store.marginLeft(),
+  ];
+
+  let result;
+
+  for (const rep of representations) {
+    result = unwrapAll(rep.queryAt(mouseX, mouseY) ?? {});
+  }
+
+  let string = "";
+  for (const [k, v] of Object.entries(result ?? {})) string += `${k}: ${v}<br>`;
+  plot.query.innerHTML = string;
+
+  plot.query.style.left = `${mouseX + marginLeft}px`;
+  plot.query.style.top = `${innerHeight - mouseY}px`;
+  plot.query.style.display = `inline-block`;
 }

@@ -56,6 +56,7 @@ export class Marker {
       [layerSymbol]: layer,
       [transientSymbol]: transient,
     });
+
     this.transientPositions = new Set<number>();
 
     const _indices = Array(n).fill(GROUP1);
@@ -67,6 +68,10 @@ export class Marker {
     this.factor = () => Factor.computed(uniqueIndices, indices(), this.data);
 
     createEffect(this.update);
+  }
+
+  hasTransient() {
+    return this.transientPositions.size > 0;
   }
 
   update = () => {

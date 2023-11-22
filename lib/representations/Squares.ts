@@ -8,7 +8,7 @@ import {
   transientSymbol,
 } from "../structs/Symbols";
 import { drawClear, drawRect } from "../utils/drawfuns";
-import { rectOverlap } from "../utils/funs";
+import { pointInRect, rectOverlap } from "../utils/funs";
 import { Representation } from "./Representation";
 import { transientOptions } from "./transientOpts";
 
@@ -79,5 +79,26 @@ export class Squares implements Representation {
     }
 
     return selected;
+  }
+
+  queryAt(x: number, y: number) {
+    const { partData, scaleX, scaleY, scaleSize, breakWidthX, breakWidthY } =
+      this.adapter;
+
+    const data = partData(1);
+    const sizeX = Math.min(breakWidthX(), breakWidthY()) / 2;
+
+    for (const row of data) {
+      const xx = scaleX(row.x.value());
+      const yy = scaleY(row.y.value());
+      const size = scaleSize(row.size.value()) * sizeX;
+
+      const x0 = xx - size;
+      const x1 = xx + size;
+      const y0 = yy - size;
+      const y1 = yy + size;
+
+      if (pointInRect([x, y], [x0, y0, x1, y1])) return row;
+    }
   }
 }

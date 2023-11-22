@@ -42,6 +42,20 @@ canvas {
   outline: 2px solid #7a7a7a;
 }
 
+.plotscape-query {
+  z-index: 30;
+  position: absolute;
+  width: fit-content;
+  height: fit-content;
+  background-color: white;
+  border: 1px solid #7a7a7a;
+  padding: 1%;
+}
+
+.plotscape-query:empty {
+  opacity: 0%;
+}
+
 .plotscape-under {
   z-index: 1;
   background-color: #ededed;

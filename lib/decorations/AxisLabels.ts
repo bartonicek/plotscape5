@@ -4,7 +4,7 @@ import { Plot } from "../dom/plot/Plot";
 import { makeCanvasContext } from "../dom/plot/makeCanvasContext";
 import { PlotStore } from "../dom/plot/makePlotStore";
 import { ScaleLike } from "../structs/scales/ScaleLike";
-import drawText, { drawClear } from "../utils/drawfuns";
+import { drawClear, drawText } from "../utils/drawfuns";
 
 const axisAlign = {
   x: {
@@ -52,7 +52,7 @@ export class AxisLabels<T extends string | number> {
     // if (typeof labels[0] === "number") labels = labels.map(round(2));
 
     const { height, innerBottom, innerTop, innerLeft, innerRight } = store;
-    const { fontsize } = graphicParameters;
+    const { labelFontsize: fontsize } = graphicParameters;
 
     const yBase = height() - innerBottom() + graphicParameters.axisOffset;
     const xBase = innerLeft() - graphicParameters.axisOffset;

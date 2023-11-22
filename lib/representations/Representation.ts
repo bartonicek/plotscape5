@@ -5,5 +5,6 @@ export type Representation = {
   checkSelection: (
     selectionRect: [number, number, number, number]
   ) => Set<number>;
+  queryAt: (x: number, y: number) => Record<string, any> | undefined;
   keyActions?: Record<string, SideEffect>;
 };

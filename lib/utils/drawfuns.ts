@@ -46,7 +46,6 @@ export function drawPoint(
   y: number,
   options?: Partial<PointOptions>
 ) {
-  // const { height } = context.canvas.getBoundingClientRect();
   const opts = Object.assign({}, defaultPointOptions, options);
 
   context.save();
@@ -64,9 +63,37 @@ export function drawPoint(
   context.restore();
 }
 
+export type LineOptions = {
+  color?: string;
+  width?: number;
+};
+
+export function drawLine(
+  context: CanvasRenderingContext2D,
+  x: number[],
+  y: number[],
+  options?: LineOptions
+) {
+  const opts = Object.assign({}, { color: "black", width: 1 }, options);
+
+  context.save();
+
+  context.strokeStyle = opts.color;
+  context.lineWidth = opts.width;
+
+  context.beginPath();
+  context.moveTo(x[0], y[0]);
+  for (let i = 1; i < x.length; i++) {
+    context.lineTo(x[i], y[i]);
+  }
+
+  context.stroke();
+  context.restore();
+}
+
 type TextOptions = { fontsize: number; fontfamily: string; vertical: boolean };
 
-export default function drawText(
+export function drawText(
   context: CanvasRenderingContext2D,
   label: string,
   x: number,

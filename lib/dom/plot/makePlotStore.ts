@@ -15,7 +15,7 @@ export const makePlotStore = () => {
   const [clickX, setClickX] = createSignal(0);
   const [clickY, setClickY] = createSignal(0);
 
-  const { marginLines, fontsize } = graphicParameters;
+  const { marginLines, labelFontsize: fontsize } = graphicParameters;
   const marginBottom = lazy(marginLines[0] * fontsize);
   const marginLeft = lazy(marginLines[1] * fontsize);
   const marginTop = lazy(marginLines[2] * fontsize);

@@ -2,31 +2,32 @@ import graphicParameters from "../dom/graphicParameters";
 import { Plot } from "../dom/plot/Plot";
 import { makeCanvasContext } from "../dom/plot/makeCanvasContext";
 import { PlotStore } from "../dom/plot/makePlotStore";
-import drawText, { drawClear } from "../utils/drawfuns";
+import { drawClear, drawText } from "../utils/drawfuns";
 import { Dict } from "../utils/types";
 import { Decoration } from "./Decoration";
 
-const axisAlign = {
+type AlignmentOptions = {
+  textBaseline: CanvasTextBaseline;
+  textAlign: CanvasTextAlign;
+};
+
+const axisAlign: { x: AlignmentOptions; y: AlignmentOptions } = {
   x: {
     textBaseline: "top",
     textAlign: "center",
   },
   y: {
-    textBaseline: "middle",
-    textAlign: "center",
+    textBaseline: "bottom",
+    textAlign: "left",
   },
 } as const;
 
 export class AxisTitle implements Decoration {
-  along: "x" | "y";
-  title: string;
   context: CanvasRenderingContext2D;
   scales: Dict;
   store: PlotStore;
 
-  constructor(plot: Plot, along: "x" | "y", title: string) {
-    this.along = along;
-    this.title = title;
+  constructor(private plot: Plot, private along: "x" | "y") {
     this.context = makeCanvasContext(plot, {
       inner: false,
       classes: ["over"],
@@ -35,13 +36,20 @@ export class AxisTitle implements Decoration {
     this.store = plot.store;
   }
 
-  draw = () => {
-    const { context, scales, along, title, store } = this;
+  title() {
+    return this.plot[`${this.along}Title`];
+  }
 
-    const scale = scales[along];
+  draw = () => {
+    const { context, scales, along, store } = this;
+    const title = this.title();
+
+    if (!title) return;
+
+    const scale = scales.pct[along];
 
     const { height, marginLeft, marginBottom } = store;
-    const { fontsize } = graphicParameters;
+    const { titleFontsize: fontsize } = graphicParameters;
 
     const yBase = height() - marginBottom() / 2;
     const xBase = marginLeft() / 2;
@@ -52,7 +60,9 @@ export class AxisTitle implements Decoration {
     context.textBaseline = axisAlign[along].textBaseline;
     context.textAlign = axisAlign[along].textAlign;
 
-    if (along === "x") drawText(context, title, primary, yBase, { fontsize });
-    else drawText(context, title, xBase, primary, { fontsize, vertical: true });
+    const opts = { fontsize, fontfamily: `Times` };
+
+    if (along === "x") drawText(context, title, primary, yBase, opts);
+    else drawText(context, title, xBase, primary, { ...opts, vertical: true });
   };
 }

@@ -1,6 +1,7 @@
 import { batch, createEffect } from "solid-js";
 import html from "solid-js/html";
 import { AxisLabels } from "../../decorations/AxisLabels";
+import { AxisTitle } from "../../decorations/AxisTitle";
 import { Decoration } from "../../decorations/Decoration";
 import { Representation } from "../../representations/Representation";
 import { TRANSIENT } from "../../structs/Marker";
@@ -18,11 +19,12 @@ import { makeCanvasContext } from "./makeCanvasContext";
 import { PlotExpanses, makeExpanses } from "./makeExpanses";
 import { PlotStore, makePlotStore } from "./makePlotStore";
 import { PlotScales, makeScales } from "./makeScales";
-import { reset, zoom } from "./plotKeyActions";
+import { query, reset, zoom } from "./plotKeyActions";
 
 export class Plot {
   id: Symbol;
   container: HTMLDivElement;
+  query: HTMLDivElement;
 
   store: PlotStore;
   expanses: PlotExpanses;
@@ -31,6 +33,9 @@ export class Plot {
 
   representations: Representation[];
   decorations: Decoration[];
+
+  xTitle: string;
+  yTitle: string;
 
   keyActions: Record<string, () => void>;
 
@@ -41,6 +46,12 @@ export class Plot {
     ></div>` as HTMLDivElement;
     this.container = container;
     scene.app.appendChild(container);
+
+    const queryLayer = html`<div
+      class="plotscape-query"
+    ></div>` as HTMLDivElement;
+    this.query = queryLayer;
+    this.container.appendChild(queryLayer);
 
     window.addEventListener("resize", throttle(this.onResize, 50));
     container.addEventListener("mousedown", this.onMouseDown);
@@ -69,12 +80,18 @@ export class Plot {
     this.representations = [];
     this.decorations = [];
 
+    this.xTitle = "x";
+    this.yTitle = "y";
+
     this.pushDecoration(new AxisLabels(this, "x"));
     this.pushDecoration(new AxisLabels(this, "y"));
+    this.pushDecoration(new AxisTitle(this, "x", this.xTitle));
+    this.pushDecoration(new AxisTitle(this, "y", this.yTitle));
 
     this.keyActions = {
       KeyR: () => reset(this),
       KeyZ: () => zoom(this),
+      KeyQ: () => query(this),
     };
 
     scene.pushPlot(this);
@@ -105,6 +122,7 @@ export class Plot {
   };
 
   deactivate = () => {
+    this.query.style.display = `none`;
     this.store.setActive(false);
     this.container.classList.remove("active");
     drawClear(this.contexts.user);
@@ -114,7 +132,6 @@ export class Plot {
     const { setWidth, setHeight } = this.store;
     setWidth(asInt(getComputedStyle(this.container)["width"]));
     setHeight(asInt(getComputedStyle(this.container)["height"]));
-    // this.scene.marker.clearTransient();
 
     for (const rep of this.representations) rep.draw();
     for (const dec of this.decorations) dec.draw();
@@ -131,6 +148,8 @@ export class Plot {
       setMouseX,
       setMouseY,
     } = this.store;
+
+    this.query.innerText = "";
 
     for (const plot of this.scene.plots) {
       if (plot.id != this.id) plot.deactivate();
@@ -162,6 +181,8 @@ export class Plot {
   };
 
   onMouseUp = () => {
+    this.query.innerText = "";
+
     this.store.setRightButtonClicked(false);
     this.store.setHolding(false);
   };
