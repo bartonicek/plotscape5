@@ -2,6 +2,8 @@ import { ExpanseLinear } from "../expanses/ExpanseLinear";
 import { ScaleLike } from "./ScaleLike";
 
 export class ScaleLinear implements ScaleLike {
+  unitNeat?: number;
+
   constructor(
     public domain: ExpanseLinear,
     public norm: ExpanseLinear,
@@ -42,7 +44,7 @@ export class ScaleLinear implements ScaleLike {
   }
 
   breaks(n = 4) {
-    const { domain, norm } = this;
+    let { domain, norm } = this;
 
     const [lower, upper] = [
       domain.unnormalize(norm.normalize(0)),

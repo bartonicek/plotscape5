@@ -33,7 +33,6 @@ async function mpgTest() {
       var1: d.displ,
       var2: d.hwy,
     }));
-
     const plot5 = new FluctuationPlot(scene, (d) => ({
       var1: d.year,
       var2: d.cyl,

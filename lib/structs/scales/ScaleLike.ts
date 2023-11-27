@@ -7,6 +7,7 @@ export type ScaleLike = {
   pullback(x: number): any;
   breaks(): any[];
   breakWidth(): number;
+  resetUnit?(): void;
 
   setLimits?(domain: ExpanseLinear): ScaleLike;
   setValues?(domain: ExpanseDiscrete): ScaleLike;

@@ -64,6 +64,19 @@ export function compareAlNum(a: string, b: string) {
   return a.localeCompare(b, "en", { numeric: true });
 }
 
+// Number functions
+
+export function threshold(
+  value: number,
+  increment: number,
+  min: number,
+  max: number
+) {
+  if (value + increment < min) return value;
+  if (value + increment > max) return value;
+  return value + increment;
+}
+
 // Array functions
 
 export function seq(start: number, end: number) {

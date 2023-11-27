@@ -6,6 +6,7 @@ import { Plot } from "./Plot";
 
 export function reset(plot: Plot) {
   const { defaultNorm } = graphicParameters;
+
   plot.store.setNormXLower(defaultNorm.x.lower);
   plot.store.setNormYLower(defaultNorm.y.lower);
   plot.store.setNormXUpper(defaultNorm.x.upper);

@@ -85,8 +85,8 @@ export class Plot {
 
     this.pushDecoration(new AxisLabels(this, "x"));
     this.pushDecoration(new AxisLabels(this, "y"));
-    this.pushDecoration(new AxisTitle(this, "x", this.xTitle));
-    this.pushDecoration(new AxisTitle(this, "y", this.yTitle));
+    this.pushDecoration(new AxisTitle(this, "x"));
+    this.pushDecoration(new AxisTitle(this, "y"));
 
     this.keyActions = {
       KeyR: () => reset(this),
