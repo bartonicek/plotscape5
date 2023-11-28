@@ -45,7 +45,7 @@ export class Plot {
       class="plotscape-container"
     ></div>` as HTMLDivElement;
     this.container = container;
-    scene.app.appendChild(container);
+    scene.container.appendChild(container);
 
     const queryLayer = html`<div
       class="plotscape-query"

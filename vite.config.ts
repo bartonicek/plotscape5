@@ -10,6 +10,9 @@ export default defineConfig({
       name: "plotscape5",
     },
   },
+  optimizeDeps: {
+    exclude: ["solid-js"],
+  },
   plugins: [
     libInjectCss(),
     dts({

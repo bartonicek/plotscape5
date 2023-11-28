@@ -9,13 +9,18 @@ import {
 import { drawClear } from "../../utils/drawfuns";
 import { Cols } from "../../utils/types";
 import { Plot } from "../plot/Plot";
+import { help } from "./help";
 import makeSceneStore, { SceneStore } from "./makeSceneStore";
+
+console.log(help);
 
 const isScene = (target: Element) => {
   return target.classList.contains("plotscape-scene");
 };
 
 export class Scene<T extends Cols> {
+  container: HTMLDivElement;
+
   nPlots: number;
   nCols: number;
   nRows: number;
@@ -28,7 +33,12 @@ export class Scene<T extends Cols> {
   keyActions: Record<string, () => void>;
 
   constructor(public app: HTMLDivElement, public data: Dataframe<T>) {
-    this.app.classList.add("plotscape-scene");
+    this.container = document.createElement("div");
+    this.container.classList.add("plotscape-scene");
+
+    const helpButton = document.createElement("button");
+    this.app.appendChild(helpButton);
+    this.app.appendChild(this.container);
 
     this.nPlots = 0;
     this.nCols = 0;
@@ -50,6 +60,15 @@ export class Scene<T extends Cols> {
     window.addEventListener("keydown", this.onKeyDown);
     window.addEventListener("keyup", this.onKeyUp);
     window.addEventListener("dblclick", this.onDoubleClick);
+
+    const helpDialog = document.createElement("dialog");
+    helpButton.classList.add("plotscape-help-button");
+    helpDialog.classList.add("plotscape-help-modal");
+    helpDialog.innerText = help;
+    helpButton.innerText = "?";
+    helpButton.onclick = () => helpDialog.showModal();
+    helpDialog.onclick = () => helpDialog.close();
+    this.app.appendChild(helpDialog);
   }
 
   setRowsCols = (rows: number, cols: number) => {
